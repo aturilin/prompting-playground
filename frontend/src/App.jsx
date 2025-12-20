@@ -1,242 +1,100 @@
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react'
+import { TemplateWithInputs } from './components/TemplateWithInputs'
+import { ModelLibrary } from './components/ModelLibrary'
+import { ResultsDisplay } from './components/ResultsDisplay'
+import { ExperimentHistory } from './components/ExperimentHistory'
+import { TemplateLibrary } from './components/TemplateLibrary'
+import { Toast } from './components/Toast'
+import { Sparkles, Copy, Check, Play, ArrowRight, Save } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 const API = '/api'
 
-const styles = {
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '20px',
-  },
-  header: {
-    marginBottom: '20px',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-  },
-  section: {
-    background: 'white',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '8px',
-    fontWeight: '500',
-  },
-  textarea: {
-    width: '100%',
-    minHeight: '120px',
-    padding: '12px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontFamily: 'monospace',
-    resize: 'vertical',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    fontSize: '14px',
-  },
-  button: {
-    padding: '10px 20px',
-    background: '#2563eb',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '500',
-  },
-  buttonSecondary: {
-    padding: '8px 16px',
-    background: '#e5e7eb',
-    color: '#374151',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  buttonSmall: {
-    padding: '4px 8px',
-    background: '#10b981',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '12px',
-  },
-  modelList: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '8px',
-    marginTop: '10px',
-  },
-  modelChip: {
-    padding: '6px 12px',
-    background: '#e5e7eb',
-    borderRadius: '20px',
-    fontSize: '13px',
-    cursor: 'pointer',
-  },
-  modelChipSelected: {
-    background: '#2563eb',
-    color: 'white',
-  },
-  resultsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-    gap: '16px',
-    marginTop: '20px',
-  },
-  resultCard: {
-    background: '#f9fafb',
-    border: '1px solid #e5e7eb',
-    borderRadius: '8px',
-    padding: '16px',
-  },
-  resultHeader: {
-    fontWeight: '600',
-    marginBottom: '10px',
-    fontSize: '14px',
-    color: '#374151',
-  },
-  resultContent: {
-    whiteSpace: 'pre-wrap',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    maxHeight: '300px',
-    overflow: 'auto',
-  },
-  resultMeta: {
-    marginTop: '10px',
-    fontSize: '12px',
-    color: '#6b7280',
-  },
-  error: {
-    color: '#dc2626',
-    padding: '10px',
-    background: '#fef2f2',
-    borderRadius: '6px',
-  },
-  savedTests: {
-    marginTop: '10px',
-  },
-  testItem: {
-    padding: '10px',
-    background: '#f9fafb',
-    borderRadius: '6px',
-    marginBottom: '8px',
-    cursor: 'pointer',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  flex: {
-    display: 'flex',
-    gap: '10px',
-    alignItems: 'center',
-  },
-  running: {
-    color: '#2563eb',
-    fontSize: '14px',
-  },
-  ratingSection: {
-    marginTop: '12px',
-    paddingTop: '12px',
-    borderTop: '1px solid #e5e7eb',
-  },
-  stars: {
-    display: 'flex',
-    gap: '4px',
-    marginBottom: '8px',
-  },
-  star: {
-    cursor: 'pointer',
-    fontSize: '20px',
-    color: '#d1d5db',
-  },
-  starActive: {
-    color: '#fbbf24',
-  },
-  commentInput: {
-    width: '100%',
-    padding: '8px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    fontSize: '12px',
-    marginBottom: '8px',
-  },
-  savedBadge: {
-    background: '#10b981',
-    color: 'white',
-    padding: '2px 8px',
-    borderRadius: '4px',
-    fontSize: '11px',
-    marginLeft: '8px',
-  },
-  select: {
-    padding: '8px 12px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    fontSize: '13px',
-    minWidth: '250px',
-    background: 'white',
-    cursor: 'pointer',
-  },
+// Generate unique ID (fallback for browsers without crypto.randomUUID)
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
 }
 
-function StarRating({ rating, onRate }) {
-  return (
-    <div style={styles.stars}>
-      {[1, 2, 3, 4, 5].map(star => (
-        <span
-          key={star}
-          style={{
-            ...styles.star,
-            ...(star <= rating ? styles.starActive : {})
-          }}
-          onClick={() => onRate(star)}
-        >
-          ★
-        </span>
-      ))}
-    </div>
-  )
-}
+const DEFAULT_TEMPLATES = [
+  {
+    id: 'expert',
+    name: 'Expert Analysis',
+    description: 'Professional expert template',
+    template: `You are an expert {{role}} specializing in {{field}}.
+
+Your task is to {{task description}}.
+
+Please ensure your response is:
+1. {{tone}}
+2. Concise but comprehensive
+3. Formatted as {{format}}
+
+Context:
+{{context}}`
+  },
+  {
+    id: 'simple',
+    name: 'Simple Task',
+    description: 'Direct prompt',
+    template: '{{task}}'
+  }
+]
 
 export default function App() {
-  const [prompt, setPrompt] = useState('')
-  const [models, setModels] = useState([])
+  // State
+  const [templates, setTemplates] = useState(DEFAULT_TEMPLATES)
+  const [selectedTemplateId, setSelectedTemplateId] = useState(DEFAULT_TEMPLATES[0].id)
+  const [variableValues, setVariableValues] = useState({})
+  const [availableModels, setAvailableModels] = useState([])
   const [selectedModels, setSelectedModels] = useState([])
   const [results, setResults] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
+  const [copied, setCopied] = useState(false)
   const [savedTests, setSavedTests] = useState([])
-  const [testName, setTestName] = useState('')
-  const [ratings, setRatings] = useState({})  // { modelId: { rating, comment, saved } }
-  const [templates, setTemplates] = useState([])
-  const [selectedTemplate, setSelectedTemplate] = useState('')
-  const [status, setStatus] = useState('')  // Current processing status
+  const [toast, setToast] = useState({ message: '', type: 'loading', visible: false })
+  const resultsRef = useRef(null)
 
+  const currentTemplate = templates.find((t) => t.id === selectedTemplateId) || templates[0]
+
+  // Load data on mount
   useEffect(() => {
     fetchModels()
-    fetchTests()
     fetchTemplates()
+    fetchTests()
   }, [])
 
   async function fetchModels() {
     try {
       const res = await fetch(`${API}/models`)
       const data = await res.json()
-      setModels(data.models || [])
+      const models = (data.models || []).map(m => ({ id: m.id, name: m.id, provider: getProvider(m.id) }))
+      setAvailableModels(models)
+      if (models.length > 0 && selectedModels.length === 0) {
+        setSelectedModels([models[0]])
+      }
     } catch (e) {
       console.error('Failed to fetch models:', e)
+    }
+  }
+
+  async function fetchTemplates() {
+    try {
+      const res = await fetch(`${API}/templates`)
+      const data = await res.json()
+      if (data.templates && data.templates.length > 0) {
+        const loaded = data.templates.map(t => ({
+          id: t.id,
+          name: t.name,
+          description: t.description,
+          template: t.template
+        }))
+        setTemplates([...DEFAULT_TEMPLATES, ...loaded])
+      }
+    } catch (e) {
+      console.error('Failed to fetch templates:', e)
     }
   }
 
@@ -250,52 +108,204 @@ export default function App() {
     }
   }
 
-  async function fetchTemplates() {
+  function getProvider(modelId) {
+    if (modelId.includes('gpt') || modelId.includes('openai')) return 'OpenAI'
+    if (modelId.includes('claude') || modelId.includes('anthropic')) return 'Anthropic'
+    if (modelId.includes('gemini') || modelId.includes('google')) return 'Google'
+    if (modelId.includes('llama') || modelId.includes('meta')) return 'Meta'
+    if (modelId.includes('mistral')) return 'Mistral'
+    if (modelId.includes('deepseek')) return 'DeepSeek'
+    return 'Other'
+  }
+
+  const showToast = (message, type, duration = 2000) => {
+    setToast({ message, type, visible: true })
+    if (type === 'success') {
+      setTimeout(() => setToast((prev) => ({ ...prev, visible: false })), duration)
+    }
+  }
+
+  const hideToast = () => setToast((prev) => ({ ...prev, visible: false }))
+
+  // Build filled prompt (moved up for use in handlers)
+  const filledPrompt = useMemo(() => {
+    let result = currentTemplate.template
+    const vars = result.match(/\{\{([\w\s-]+)\}\}/g) || []
+    vars.forEach((v) => {
+      const varName = v.slice(2, -2).trim()
+      const value = variableValues[varName] || ''
+      result = result.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), value)
+    })
+    return result
+  }, [currentTemplate.template, variableValues])
+
+  const scrollToResults = () => {
+    resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const handleVariableChange = (name, value) => {
+    setVariableValues((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleTemplateChange = (newContent) => {
+    setTemplates((prev) =>
+      prev.map((t) => (t.id === selectedTemplateId ? { ...t, template: newContent } : t))
+    )
+  }
+
+  const handleTemplateSelect = (id) => {
+    setSelectedTemplateId(id)
+    setVariableValues({})
+  }
+
+  const handleTemplateAdd = (name, content) => {
+    const newTemplate = {
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      description: 'Custom template',
+      template: content || '{{task}}'
+    }
+    setTemplates((prev) => [...prev, newTemplate])
+    setSelectedTemplateId(newTemplate.id)
+  }
+
+  const handleTemplateDelete = (id) => {
+    if (templates.length <= 1) return
+    setTemplates((prev) => prev.filter((t) => t.id !== id))
+    if (selectedTemplateId === id) {
+      setSelectedTemplateId(templates[0].id)
+    }
+  }
+
+  const handleModelAdd = (model) => {
+    setSelectedModels((prev) => [...prev, model])
+  }
+
+  const handleModelRemove = (id) => {
+    if (selectedModels.length <= 1) return
+    setSelectedModels((prev) => prev.filter((m) => m.id !== id))
+  }
+
+  const handleUpdateResult = (id, updates) => {
+    setResults((prev) => {
+      const newResults = prev.map((r) => {
+        if ((r.id || r.model) === id) {
+          const updated = { ...r, ...updates }
+          // Auto-save evaluation when rating is set
+          if (updates.rating) {
+            handleSaveEvaluation(updated)
+          }
+          return updated
+        }
+        return r
+      })
+      return newResults
+    })
+  }
+
+  const handleLoadTest = async (testId) => {
+    const test = savedTests.find((t) => t.id === testId)
+    if (!test) return
+
+    showToast('Loading test...', 'loading')
+
+    // Restore state
+    if (test.prompt) {
+      setVariableValues({ task: test.prompt })
+    }
+    if (test.models) {
+      const models = availableModels.filter((m) => test.models.includes(m.id))
+      if (models.length > 0) setSelectedModels(models)
+    }
+    if (test.results) {
+      setResults(test.results)
+    }
+
+    hideToast()
+    showToast('Test loaded!', 'success')
+    setTimeout(scrollToResults, 600)
+  }
+
+  const handleDeleteTest = async (testId) => {
     try {
-      const res = await fetch(`${API}/templates`)
-      const data = await res.json()
-      setTemplates(data.templates || [])
+      await fetch(`${API}/tests/${testId}`, { method: 'DELETE' })
+      fetchTests()
     } catch (e) {
-      console.error('Failed to fetch templates:', e)
+      console.error('Failed to delete test:', e)
     }
   }
 
-  function applyTemplate(templateId) {
-    const template = templates.find(t => t.id === templateId)
-    if (template) {
-      setSelectedTemplate(templateId)
-      // If prompt is empty, set placeholder, otherwise wrap existing prompt
-      if (!prompt.trim()) {
-        setPrompt(template.template)
-      } else {
-        // Replace {{task}} with current prompt
-        const applied = template.template.replace('{{task}}', prompt)
-        setPrompt(applied)
-      }
+  const handleSaveTest = async () => {
+    if (results.length === 0) return
+
+    const testName = prompt('Enter a name for this test:', `Test ${new Date().toLocaleDateString()}`)
+    if (!testName) return
+
+    const test = {
+      id: generateId(),
+      name: testName,
+      prompt: filledPrompt,
+      models: selectedModels.map((m) => m.id),
+      results: results,
+      created_at: new Date().toISOString()
+    }
+
+    try {
+      showToast('Saving test...', 'loading')
+      await fetch(`${API}/tests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(test)
+      })
+      fetchTests()
+      hideToast()
+      showToast('Test saved!', 'success')
+    } catch (e) {
+      console.error('Failed to save test:', e)
+      showToast('Failed to save test', 'success')
     }
   }
 
-  function toggleModel(modelId) {
-    if (selectedModels.includes(modelId)) {
-      setSelectedModels(selectedModels.filter(m => m !== modelId))
-    } else {
-      setSelectedModels([...selectedModels, modelId])
+  const handleSaveEvaluation = useCallback(async (result) => {
+    if (!result.rating) return
+
+    const evaluation = {
+      id: generateId(),
+      test_id: 'standalone',
+      test_name: 'Quick Test',
+      prompt: filledPrompt,
+      model: result.model,
+      response: result.content || '',
+      rating: result.rating,
+      comment: result.comment || '',
+      input_tokens: result.input_tokens || 0,
+      output_tokens: result.output_tokens || 0,
+      created_at: new Date().toISOString()
     }
-  }
 
-  async function runPrompt() {
-    if (!prompt.trim() || selectedModels.length === 0) return
+    try {
+      await fetch(`${API}/evaluations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(evaluation)
+      })
+    } catch (e) {
+      console.error('Failed to save evaluation:', e)
+    }
+  }, [filledPrompt])
 
-    setLoading(true)
+  const handleRun = async () => {
+    if (isRunning || selectedModels.length === 0) return
+
+    setIsRunning(true)
     setResults([])
-    setRatings({})
-    setStatus('Starting...')
+    setTimeout(scrollToResults, 300)
 
     try {
       const res = await fetch(`${API}/run-stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, models: selectedModels })
+        body: JSON.stringify({ prompt: filledPrompt, models: selectedModels.map((m) => m.id) })
       })
 
       const reader = res.body.getReader()
@@ -313,14 +323,13 @@ export default function App() {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6))
-
               if (data.type === 'status') {
-                setStatus(`[${data.current}/${data.total}] ${data.message}`)
+                showToast(`[${data.current}/${data.total}] ${data.message}`, 'loading')
               } else if (data.type === 'result') {
-                newResults.push(data)
+                newResults.push({ ...data, id: data.model })
                 setResults([...newResults])
               } else if (data.type === 'done') {
-                setStatus('')
+                hideToast()
               }
             } catch (e) {
               // ignore parse errors
@@ -330,244 +339,158 @@ export default function App() {
       }
     } catch (e) {
       console.error('Failed to run:', e)
-      setStatus('Error: ' + e.message)
+      showToast('Error: ' + e.message, 'success')
     } finally {
-      setLoading(false)
+      setIsRunning(false)
     }
   }
 
-  async function saveTest() {
-    if (!testName.trim() || results.length === 0) return
-
-    const test = {
-      id: crypto.randomUUID(),
-      name: testName,
-      prompt,
-      models: selectedModels,
-      results,
-      created_at: new Date().toISOString()
-    }
-
-    try {
-      await fetch(`${API}/tests`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(test)
-      })
-      setTestName('')
-      fetchTests()
-    } catch (e) {
-      console.error('Failed to save:', e)
-    }
-  }
-
-  function loadTest(test) {
-    setPrompt(test.prompt)
-    setSelectedModels(test.models)
-    setResults(test.results)
-    setTestName(test.name)
-    setRatings({})
-  }
-
-  async function deleteTest(id) {
-    try {
-      await fetch(`${API}/tests/${id}`, { method: 'DELETE' })
-      fetchTests()
-    } catch (e) {
-      console.error('Failed to delete:', e)
-    }
-  }
-
-  function updateRating(model, field, value) {
-    setRatings(prev => ({
-      ...prev,
-      [model]: {
-        ...prev[model],
-        [field]: value,
-        saved: false
-      }
-    }))
-  }
-
-  async function saveEvaluation(result) {
-    const r = ratings[result.model] || {}
-    if (!r.rating) return
-
-    const evaluation = {
-      id: crypto.randomUUID(),
-      test_id: testName || 'unnamed',
-      test_name: testName || 'Unnamed Test',
-      prompt: prompt,
-      model: result.model,
-      response: result.content || '',
-      rating: r.rating,
-      comment: r.comment || '',
-      input_tokens: result.input_tokens || 0,
-      output_tokens: result.output_tokens || 0,
-      created_at: new Date().toISOString()
-    }
-
-    try {
-      await fetch(`${API}/evaluations`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(evaluation)
-      })
-      setRatings(prev => ({
-        ...prev,
-        [result.model]: { ...prev[result.model], saved: true }
-      }))
-    } catch (e) {
-      console.error('Failed to save evaluation:', e)
-    }
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(filledPrompt)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
-    <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>Prompting Playground</h1>
-      </header>
+    <div className="min-h-screen bg-white">
+      {/* Subtle gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-neutral-50 via-white to-neutral-50 pointer-events-none" />
 
-      {/* Saved Tests */}
-      {savedTests.length > 0 && (
-        <div style={styles.section}>
-          <label style={styles.label}>Saved Tests</label>
-          <div style={styles.savedTests}>
-            {savedTests.map(test => (
-              <div key={test.id} style={styles.testItem}>
-                <span onClick={() => loadTest(test)}>{test.name}</span>
-                <button
-                  style={styles.buttonSecondary}
-                  onClick={() => deleteTest(test.id)}
-                >
-                  Delete
-                </button>
+      <div className="relative max-w-[1600px] mx-auto px-8 py-6">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 to-neutral-700 rounded-2xl blur-xl opacity-20" />
+              <div className="relative w-11 h-11 bg-gradient-to-br from-neutral-900 to-neutral-700 rounded-2xl flex items-center justify-center">
+                <Sparkles className="w-5.5 h-5.5 text-white" strokeWidth={2.5} />
               </div>
-            ))}
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-neutral-900">Prompt Studio</h1>
+              <p className="text-xs text-neutral-500 mt-0.5">Compare AI models side-by-side</p>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* Prompt */}
-      <div style={styles.section}>
-        <div style={styles.flex}>
-          <label style={styles.label}>Prompt</label>
-          {templates.length > 0 && (
-            <select
-              style={styles.select}
-              value={selectedTemplate}
-              onChange={e => applyTemplate(e.target.value)}
-            >
-              <option value="">-- Apply Template --</option>
-              {templates.map(t => (
-                <option key={t.id} value={t.id}>
-                  {t.name} - {t.description}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-        <textarea
-          style={styles.textarea}
-          value={prompt}
-          onChange={e => setPrompt(e.target.value)}
-          placeholder="Enter your prompt here... Use templates above to wrap with prompting techniques."
-        />
-      </div>
-
-      {/* Models */}
-      <div style={styles.section}>
-        <label style={styles.label}>Models ({selectedModels.length} selected)</label>
-        <div style={styles.modelList}>
-          {models.map(model => (
-            <span
-              key={model.id}
-              style={{
-                ...styles.modelChip,
-                ...(selectedModels.includes(model.id) ? styles.modelChipSelected : {})
-              }}
-              onClick={() => toggleModel(model.id)}
-            >
-              {model.id}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Run */}
-      <div style={styles.section}>
-        <div style={styles.flex}>
           <button
-            style={styles.button}
-            onClick={runPrompt}
-            disabled={loading || !prompt.trim() || selectedModels.length === 0}
+            onClick={copyToClipboard}
+            className="group flex items-center gap-2.5 px-4 py-2 bg-white border border-neutral-200 hover:border-neutral-300 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 transition-all shadow-sm hover:shadow"
           >
-            {loading ? 'Running...' : 'Run'}
+            {copied ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
+                <span className="text-emerald-600">Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4" strokeWidth={2.5} />
+                Copy Prompt
+              </>
+            )}
           </button>
-          {loading && <span style={styles.running}>{status || `Processing ${selectedModels.length} models...`}</span>}
-        </div>
-      </div>
+        </motion.header>
 
-      {/* Results */}
-      {results.length > 0 && (
-        <div style={styles.section}>
-          <div style={styles.flex}>
-            <label style={styles.label}>Results</label>
-            <input
-              style={{ ...styles.input, width: '200px' }}
-              placeholder="Test name to save..."
-              value={testName}
-              onChange={e => setTestName(e.target.value)}
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+          {/* Sidebar */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="space-y-4"
+          >
+            <TemplateLibrary
+              templates={templates}
+              selectedId={selectedTemplateId}
+              onSelect={handleTemplateSelect}
+              onAdd={handleTemplateAdd}
+              onDelete={handleTemplateDelete}
             />
-            <button style={styles.buttonSecondary} onClick={saveTest}>
-              Save Test
-            </button>
-          </div>
-          <div style={styles.resultsGrid}>
-            {results.map((r, i) => (
-              <div key={i} style={styles.resultCard}>
-                <div style={styles.resultHeader}>{r.model}</div>
-                {r.success ? (
-                  <>
-                    <div style={styles.resultContent}>{r.content}</div>
-                    <div style={styles.resultMeta}>
-                      {r.input_tokens} in / {r.output_tokens} out
-                    </div>
 
-                    {/* Rating Section */}
-                    <div style={styles.ratingSection}>
-                      <StarRating
-                        rating={ratings[r.model]?.rating || 0}
-                        onRate={(rating) => updateRating(r.model, 'rating', rating)}
-                      />
-                      <input
-                        style={styles.commentInput}
-                        placeholder="Add comment..."
-                        value={ratings[r.model]?.comment || ''}
-                        onChange={(e) => updateRating(r.model, 'comment', e.target.value)}
-                      />
-                      <div style={styles.flex}>
-                        <button
-                          style={styles.buttonSmall}
-                          onClick={() => saveEvaluation(r)}
-                          disabled={!ratings[r.model]?.rating}
-                        >
-                          Save Evaluation
-                        </button>
-                        {ratings[r.model]?.saved && (
-                          <span style={styles.savedBadge}>Saved!</span>
-                        )}
-                      </div>
-                    </div>
+            <ModelLibrary
+              availableModels={availableModels}
+              selectedModels={selectedModels}
+              onAdd={handleModelAdd}
+              onRemove={handleModelRemove}
+            />
+
+            <ExperimentHistory
+              experiments={savedTests}
+              onSelect={handleLoadTest}
+              onDelete={handleDeleteTest}
+            />
+          </motion.div>
+
+          {/* Main Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="space-y-6"
+          >
+            {/* Template Editor */}
+            <TemplateWithInputs
+              template={currentTemplate.template}
+              values={variableValues}
+              onChange={handleVariableChange}
+              onTemplateChange={handleTemplateChange}
+            />
+
+            {/* Run & Save Buttons */}
+            <div className="flex justify-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleRun}
+                disabled={isRunning || selectedModels.length === 0}
+                className={`
+                  group relative flex items-center gap-3 px-8 py-3.5 rounded-2xl font-semibold text-base transition-all duration-300
+                  ${isRunning || selectedModels.length === 0
+                    ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
+                    : 'bg-neutral-900 text-white hover:bg-neutral-800 shadow-lg shadow-neutral-900/10 hover:shadow-xl hover:shadow-neutral-900/20'}
+                `}
+              >
+                {isRunning ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Running {selectedModels.length} models...</span>
                   </>
                 ) : (
-                  <div style={styles.error}>{r.error}</div>
+                  <>
+                    <Play className="w-5 h-5" strokeWidth={2.5} fill="currentColor" />
+                    <span>Run Test</span>
+                    <ArrowRight className="w-4 h-4 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all" strokeWidth={2.5} />
+                  </>
                 )}
-              </div>
-            ))}
-          </div>
+              </motion.button>
+
+              {results.length > 0 && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleSaveTest}
+                  className="flex items-center gap-2 px-6 py-3.5 bg-white border border-neutral-200 hover:border-neutral-300 rounded-2xl font-semibold text-base text-neutral-700 hover:text-neutral-900 transition-all shadow-sm hover:shadow"
+                >
+                  <Save className="w-5 h-5" strokeWidth={2.5} />
+                  <span>Save Test</span>
+                </motion.button>
+              )}
+            </div>
+
+            {/* Results */}
+            <div ref={resultsRef}>
+              <ResultsDisplay results={results} onUpdateResult={handleUpdateResult} />
+            </div>
+          </motion.div>
         </div>
-      )}
+      </div>
+
+      <Toast message={toast.message} type={toast.type} isVisible={toast.visible} />
     </div>
   )
 }
