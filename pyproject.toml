@@ -1,14 +1,19 @@
-[project]
+[tool.poetry]
 name = "prompting-playground"
 version = "1.0.0"
 description = "Test prompts across multiple LLM models"
-requires-python = ">=3.11"
-dependencies = [
-    "fastapi",
-    "uvicorn",
-    "httpx",
-    "python-dotenv",
-    "pydantic",
-    "pyyaml",
-    "supabase",
-]
+authors = ["aturilin"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "*"
+uvicorn = "*"
+httpx = "*"
+python-dotenv = "*"
+pydantic = "*"
+pyyaml = "*"
+supabase = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
