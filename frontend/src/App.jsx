@@ -222,6 +222,7 @@ export default function App() {
   const [ratings, setRatings] = useState({})  // { modelId: { rating, comment, saved } }
   const [templates, setTemplates] = useState([])
   const [selectedTemplate, setSelectedTemplate] = useState('')
+  const [status, setStatus] = useState('')  // Current processing status
 
   useEffect(() => {
     fetchModels()
@@ -288,17 +289,48 @@ export default function App() {
     setLoading(true)
     setResults([])
     setRatings({})
+    setStatus('Starting...')
 
     try {
-      const res = await fetch(`${API}/run`, {
+      const res = await fetch(`${API}/run-stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, models: selectedModels })
       })
-      const data = await res.json()
-      setResults(data.results || [])
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      const newResults = []
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const text = decoder.decode(value)
+        const lines = text.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6))
+
+              if (data.type === 'status') {
+                setStatus(`[${data.current}/${data.total}] ${data.message}`)
+              } else if (data.type === 'result') {
+                newResults.push(data)
+                setResults([...newResults])
+              } else if (data.type === 'done') {
+                setStatus('')
+              }
+            } catch (e) {
+              // ignore parse errors
+            }
+          }
+        }
+      }
     } catch (e) {
       console.error('Failed to run:', e)
+      setStatus('Error: ' + e.message)
     } finally {
       setLoading(false)
     }
@@ -472,7 +504,7 @@ export default function App() {
           >
             {loading ? 'Running...' : 'Run'}
           </button>
-          {loading && <span style={styles.running}>Processing {selectedModels.length} models...</span>}
+          {loading && <span style={styles.running}>{status || `Processing ${selectedModels.length} models...`}</span>}
         </div>
       </div>
 

@@ -13,7 +13,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -73,7 +73,7 @@ class Evaluation(BaseModel):
 
 # --- OpenRouter ---
 
-def call_openrouter(model: str, prompt: str) -> dict:
+def call_openrouter(model: str, prompt: str, max_tokens: int = 4096) -> dict:
     """Call OpenRouter API."""
     url = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -86,7 +86,8 @@ def call_openrouter(model: str, prompt: str) -> dict:
 
     payload = {
         "model": model,
-        "messages": [{"role": "user", "content": prompt}]
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": max_tokens
     }
 
     try:
@@ -187,6 +188,45 @@ def run_prompt(req: RunRequest):
         results.append(result)
 
     return {"results": results}
+
+
+@app.post("/api/run-stream")
+def run_prompt_stream(req: RunRequest):
+    """Run prompt on multiple models with streaming status updates."""
+    if not API_KEY:
+        raise HTTPException(status_code=500, detail="OPENROUTER_API_KEY not configured")
+
+    def generate():
+        total = len(req.models)
+        for i, model in enumerate(req.models):
+            # Send status update
+            status = {
+                "type": "status",
+                "current": i + 1,
+                "total": total,
+                "model": model,
+                "message": f"Processing {model}..."
+            }
+            yield f"data: {json.dumps(status)}\n\n"
+
+            # Call API
+            result = call_openrouter(model, req.prompt)
+
+            # Send result
+            result["type"] = "result"
+            yield f"data: {json.dumps(result)}\n\n"
+
+        # Send done
+        yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        }
+    )
 
 
 @app.get("/api/tests")
