@@ -1,0 +1,12 @@
+# Chain of Thought - пошаговое рассуждение
+name: COT
+description: Step-by-step reasoning before answer
+
+template: |
+  {{task}}
+
+  Think through this step by step:
+  1. First, analyze what is being asked
+  2. Consider the key factors
+  3. Work through the logic
+  4. Then provide your final answer

@@ -1,0 +1,14 @@
+# Role + Chain of Thought - эксперт с рассуждением
+name: ROLE_COT
+description: Expert role assignment with step-by-step reasoning
+
+template: |
+  You are an expert {{role}} with years of experience.
+
+  Task: {{task}}
+
+  Approach this systematically:
+  1. Draw on your expertise to understand the context
+  2. Consider best practices in your field
+  3. Think through the implications
+  4. Provide a well-reasoned response

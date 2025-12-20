@@ -1,0 +1,6 @@
+# Baseline - простой промпт без техник
+name: BASELINE
+description: Direct instruction without any prompting techniques
+
+template: |
+  {{task}}

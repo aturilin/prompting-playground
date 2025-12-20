@@ -1,0 +1,16 @@
+# Structured Output - JSON формат
+name: STRUCTURED
+description: Request structured JSON output
+
+template: |
+  {{task}}
+
+  Respond in JSON format with the following structure:
+  {
+    "analysis": "your analysis of the task",
+    "reasoning": ["step 1", "step 2", "..."],
+    "result": "your final answer",
+    "confidence": "high/medium/low"
+  }
+
+  Return only valid JSON, no additional text.
