@@ -13,3 +13,6 @@ run = ["sh", "-c", "cd backend && python -m uvicorn main:app --host 0.0.0.0 --po
 [[ports]]
 localPort = 8000
 externalPort = 80
+
+[agent]
+expertMode = true
