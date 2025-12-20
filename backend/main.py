@@ -37,12 +37,12 @@ TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 
 API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
-# Supabase
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
-supabase: Client = None
-if SUPABASE_URL and SUPABASE_KEY:
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Supabase (required)
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError("SUPABASE_URL and SUPABASE_KEY must be set")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # --- Models ---
