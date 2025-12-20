@@ -7,6 +7,7 @@
     pkgs.python311Packages.httpx
     pkgs.python311Packages.python-dotenv
     pkgs.python311Packages.pydantic
+    pkgs.python311Packages.pyyaml
     pkgs.nodejs_20
   ];
 }
