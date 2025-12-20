@@ -290,10 +290,10 @@ def delete_evaluation(evaluation_id: str):
 # Handle favicon
 @app.get("/favicon.ico")
 def favicon():
-    """Serve SVG favicon."""
-    favicon_file = STATIC_DIR / "favicon.svg"
+    """Serve favicon."""
+    favicon_file = STATIC_DIR / "favicon.jpg"
     if favicon_file.exists():
-        return FileResponse(favicon_file, media_type="image/svg+xml")
+        return FileResponse(favicon_file, media_type="image/jpeg")
     from fastapi.responses import Response
     return Response(status_code=204)
 
