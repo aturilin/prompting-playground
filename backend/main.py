@@ -6,6 +6,7 @@ import os
 import json
 import httpx
 import uuid
+import yaml
 from datetime import datetime
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
@@ -34,6 +35,8 @@ app.add_middleware(
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
+
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 
 API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
@@ -224,6 +227,27 @@ def delete_test(test_id: str):
 @app.get("/api/health")
 def health():
     return {"status": "ok", "api_key_configured": bool(API_KEY)}
+
+
+# --- Templates ---
+
+@app.get("/api/templates")
+def get_templates():
+    """Get all prompt templates."""
+    templates = []
+    if TEMPLATES_DIR.exists():
+        for f in TEMPLATES_DIR.glob("*.yaml"):
+            try:
+                data = yaml.safe_load(f.read_text())
+                templates.append({
+                    "id": f.stem,
+                    "name": data.get("name", f.stem),
+                    "description": data.get("description", ""),
+                    "template": data.get("template", "")
+                })
+            except Exception:
+                pass
+    return {"templates": templates}
 
 
 # --- Evaluations ---

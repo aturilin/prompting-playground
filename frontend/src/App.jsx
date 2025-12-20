@@ -181,6 +181,15 @@ const styles = {
     fontSize: '11px',
     marginLeft: '8px',
   },
+  select: {
+    padding: '8px 12px',
+    border: '1px solid #ddd',
+    borderRadius: '6px',
+    fontSize: '13px',
+    minWidth: '250px',
+    background: 'white',
+    cursor: 'pointer',
+  },
 }
 
 function StarRating({ rating, onRate }) {
@@ -211,10 +220,13 @@ export default function App() {
   const [savedTests, setSavedTests] = useState([])
   const [testName, setTestName] = useState('')
   const [ratings, setRatings] = useState({})  // { modelId: { rating, comment, saved } }
+  const [templates, setTemplates] = useState([])
+  const [selectedTemplate, setSelectedTemplate] = useState('')
 
   useEffect(() => {
     fetchModels()
     fetchTests()
+    fetchTemplates()
   }, [])
 
   async function fetchModels() {
@@ -234,6 +246,31 @@ export default function App() {
       setSavedTests(data.tests || [])
     } catch (e) {
       console.error('Failed to fetch tests:', e)
+    }
+  }
+
+  async function fetchTemplates() {
+    try {
+      const res = await fetch(`${API}/templates`)
+      const data = await res.json()
+      setTemplates(data.templates || [])
+    } catch (e) {
+      console.error('Failed to fetch templates:', e)
+    }
+  }
+
+  function applyTemplate(templateId) {
+    const template = templates.find(t => t.id === templateId)
+    if (template) {
+      setSelectedTemplate(templateId)
+      // If prompt is empty, set placeholder, otherwise wrap existing prompt
+      if (!prompt.trim()) {
+        setPrompt(template.template)
+      } else {
+        // Replace {{task}} with current prompt
+        const applied = template.template.replace('{{task}}', prompt)
+        setPrompt(applied)
+      }
     }
   }
 
@@ -381,12 +418,28 @@ export default function App() {
 
       {/* Prompt */}
       <div style={styles.section}>
-        <label style={styles.label}>Prompt</label>
+        <div style={styles.flex}>
+          <label style={styles.label}>Prompt</label>
+          {templates.length > 0 && (
+            <select
+              style={styles.select}
+              value={selectedTemplate}
+              onChange={e => applyTemplate(e.target.value)}
+            >
+              <option value="">-- Apply Template --</option>
+              {templates.map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.name} - {t.description}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
         <textarea
           style={styles.textarea}
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
-          placeholder="Enter your prompt here..."
+          placeholder="Enter your prompt here... Use templates above to wrap with prompting techniques."
         />
       </div>
 
