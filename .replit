@@ -3,8 +3,11 @@ run = "cd backend && pip install -r requirements.txt && uvicorn main:app --host 
 [nix]
 channel = "stable-24_05"
 
+[env]
+PYTHONPATH = "${REPL_HOME}/backend"
+
 [deployment]
-run = ["sh", "-c", "cd backend && uvicorn main:app --host 0.0.0.0 --port 8000"]
+run = ["sh", "-c", "cd backend && pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000"]
 
 [[ports]]
 localPort = 8000
