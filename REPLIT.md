@@ -49,7 +49,18 @@ poetry lock
 git add poetry.lock && git commit -m "Add poetry.lock" && git push
 ```
 
+## .replit deployment
+
+```toml
+[deployment]
+deploymentTarget = "cloudrun"
+build = "poetry install --no-root"
+run = "poetry run python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000"
+```
+
+⚠️ **build/run — строки**, не массивы!
+
 ## Ссылки
 
+- [Configuration](https://docs.replit.com/replit-app/configuration)
 - [Dependency Management](https://docs.replit.com/replit-workspace/dependency-management)
-- [Replit + pip](https://blog.replit.com/pip)
