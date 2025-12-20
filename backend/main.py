@@ -287,6 +287,14 @@ def delete_evaluation(evaluation_id: str):
     return {"ok": True}
 
 
+# Handle favicon
+@app.get("/favicon.ico")
+def favicon():
+    """Return 204 No Content for favicon."""
+    from fastapi.responses import Response
+    return Response(status_code=204)
+
+
 # Serve React app for all non-API routes
 @app.get("/{full_path:path}")
 def serve_spa(full_path: str):
