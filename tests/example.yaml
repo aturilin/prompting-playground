@@ -1,0 +1,9 @@
+# Example config - replace model IDs with actual ones from OpenRouter
+prompt: |
+  Write a haiku about programming.
+
+models:
+  # Add your model IDs here, e.g.:
+  # - google/gemini-2.0-flash-exp
+  # - openai/gpt-4o
+  # - anthropic/claude-3-5-sonnet
