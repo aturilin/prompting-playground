@@ -9,7 +9,7 @@ PYTHONPATH = "${REPL_HOME}/backend"
 [deployment]
 deploymentTarget = "cloudrun"
 build = "poetry install --no-root"
-run = "poetry run python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000"
+run = "cd backend && poetry run python -m uvicorn main:app --host 0.0.0.0 --port 8000"
 
 [[ports]]
 localPort = 8000
