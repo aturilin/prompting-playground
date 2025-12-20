@@ -8,9 +8,7 @@ pyproject.toml  → PYTHON пакеты (fastapi, supabase, etc)
 poetry.lock     → ОБЯЗАТЕЛЕН для deployment
 ```
 
-**Правило:** Python-пакеты ставятся через Poetry, НЕ через nix.
-
-## Минимальный replit.nix
+## replit.nix — минимальный
 
 ```nix
 { pkgs }: {
@@ -22,9 +20,9 @@ poetry.lock     → ОБЯЗАТЕЛЕН для deployment
 }
 ```
 
-⚠️ **НЕ добавлять** `pkgs.python311Packages.xxx` — многих пакетов нет в nixpkgs (например `supabase`).
+⚠️ **НЕ добавлять** `pkgs.python311Packages.xxx` — многих пакетов нет в nixpkgs.
 
-## pyproject.toml (Poetry формат)
+## pyproject.toml — Poetry формат
 
 ```toml
 [tool.poetry]
@@ -35,18 +33,10 @@ version = "1.0.0"
 python = "^3.11"
 fastapi = "*"
 uvicorn = "*"
-supabase = "*"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-```
-
-## Генерация poetry.lock
-
-```bash
-poetry lock
-git add poetry.lock && git commit -m "Add poetry.lock" && git push
 ```
 
 ## .replit deployment
@@ -54,11 +44,17 @@ git add poetry.lock && git commit -m "Add poetry.lock" && git push
 ```toml
 [deployment]
 deploymentTarget = "cloudrun"
-build = "poetry install --no-root"
-run = "poetry run python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000"
+run = "poetry install --no-root && cd backend && poetry run python -m uvicorn main:app --host 0.0.0.0 --port 8000"
 ```
 
-⚠️ **build/run — строки**, не массивы!
+⚠️ **build команда НЕ работает** — ставь `poetry install` прямо в run!
+
+## Генерация poetry.lock
+
+```bash
+poetry lock
+git add poetry.lock && git commit -m "Add poetry.lock" && git push
+```
 
 ## Ссылки
 
