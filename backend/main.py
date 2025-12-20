@@ -38,9 +38,11 @@ TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
 # Supabase
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ioliglflghhanbkfudzd.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvbGlnbGZsZ2hoYW5ia2Z1ZHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzNzQwMzcsImV4cCI6MjA1Njk1MDAzN30.Vgx0n1uMB46kWfI02sWVZ8xjRzRTTV8GT235GMBRW30")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
+supabase: Client = None
+if SUPABASE_URL and SUPABASE_KEY:
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # --- Models ---
