@@ -63,6 +63,15 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
   },
+  buttonSmall: {
+    padding: '4px 8px',
+    background: '#10b981',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '12px',
+  },
   modelList: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -138,6 +147,59 @@ const styles = {
     color: '#2563eb',
     fontSize: '14px',
   },
+  ratingSection: {
+    marginTop: '12px',
+    paddingTop: '12px',
+    borderTop: '1px solid #e5e7eb',
+  },
+  stars: {
+    display: 'flex',
+    gap: '4px',
+    marginBottom: '8px',
+  },
+  star: {
+    cursor: 'pointer',
+    fontSize: '20px',
+    color: '#d1d5db',
+  },
+  starActive: {
+    color: '#fbbf24',
+  },
+  commentInput: {
+    width: '100%',
+    padding: '8px',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+    fontSize: '12px',
+    marginBottom: '8px',
+  },
+  savedBadge: {
+    background: '#10b981',
+    color: 'white',
+    padding: '2px 8px',
+    borderRadius: '4px',
+    fontSize: '11px',
+    marginLeft: '8px',
+  },
+}
+
+function StarRating({ rating, onRate }) {
+  return (
+    <div style={styles.stars}>
+      {[1, 2, 3, 4, 5].map(star => (
+        <span
+          key={star}
+          style={{
+            ...styles.star,
+            ...(star <= rating ? styles.starActive : {})
+          }}
+          onClick={() => onRate(star)}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  )
 }
 
 export default function App() {
@@ -148,6 +210,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [savedTests, setSavedTests] = useState([])
   const [testName, setTestName] = useState('')
+  const [ratings, setRatings] = useState({})  // { modelId: { rating, comment, saved } }
 
   useEffect(() => {
     fetchModels()
@@ -187,6 +250,7 @@ export default function App() {
 
     setLoading(true)
     setResults([])
+    setRatings({})
 
     try {
       const res = await fetch(`${API}/run`, {
@@ -233,6 +297,7 @@ export default function App() {
     setSelectedModels(test.models)
     setResults(test.results)
     setTestName(test.name)
+    setRatings({})
   }
 
   async function deleteTest(id) {
@@ -241,6 +306,50 @@ export default function App() {
       fetchTests()
     } catch (e) {
       console.error('Failed to delete:', e)
+    }
+  }
+
+  function updateRating(model, field, value) {
+    setRatings(prev => ({
+      ...prev,
+      [model]: {
+        ...prev[model],
+        [field]: value,
+        saved: false
+      }
+    }))
+  }
+
+  async function saveEvaluation(result) {
+    const r = ratings[result.model] || {}
+    if (!r.rating) return
+
+    const evaluation = {
+      id: crypto.randomUUID(),
+      test_id: testName || 'unnamed',
+      test_name: testName || 'Unnamed Test',
+      prompt: prompt,
+      model: result.model,
+      response: result.content || '',
+      rating: r.rating,
+      comment: r.comment || '',
+      input_tokens: result.input_tokens || 0,
+      output_tokens: result.output_tokens || 0,
+      created_at: new Date().toISOString()
+    }
+
+    try {
+      await fetch(`${API}/evaluations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(evaluation)
+      })
+      setRatings(prev => ({
+        ...prev,
+        [result.model]: { ...prev[result.model], saved: true }
+      }))
+    } catch (e) {
+      console.error('Failed to save evaluation:', e)
     }
   }
 
@@ -326,7 +435,7 @@ export default function App() {
               onChange={e => setTestName(e.target.value)}
             />
             <button style={styles.buttonSecondary} onClick={saveTest}>
-              Save
+              Save Test
             </button>
           </div>
           <div style={styles.resultsGrid}>
@@ -338,6 +447,32 @@ export default function App() {
                     <div style={styles.resultContent}>{r.content}</div>
                     <div style={styles.resultMeta}>
                       {r.input_tokens} in / {r.output_tokens} out
+                    </div>
+
+                    {/* Rating Section */}
+                    <div style={styles.ratingSection}>
+                      <StarRating
+                        rating={ratings[r.model]?.rating || 0}
+                        onRate={(rating) => updateRating(r.model, 'rating', rating)}
+                      />
+                      <input
+                        style={styles.commentInput}
+                        placeholder="Add comment..."
+                        value={ratings[r.model]?.comment || ''}
+                        onChange={(e) => updateRating(r.model, 'comment', e.target.value)}
+                      />
+                      <div style={styles.flex}>
+                        <button
+                          style={styles.buttonSmall}
+                          onClick={() => saveEvaluation(r)}
+                          disabled={!ratings[r.model]?.rating}
+                        >
+                          Save Evaluation
+                        </button>
+                        {ratings[r.model]?.saved && (
+                          <span style={styles.savedBadge}>Saved!</span>
+                        )}
+                      </div>
                     </div>
                   </>
                 ) : (

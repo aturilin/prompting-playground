@@ -54,6 +54,20 @@ class SavedTest(BaseModel):
     created_at: str
 
 
+class Evaluation(BaseModel):
+    id: str
+    test_id: str
+    test_name: str
+    prompt: str
+    model: str
+    response: str
+    rating: int  # 1-5
+    comment: str
+    input_tokens: int
+    output_tokens: int
+    created_at: str  # ISO timestamp
+
+
 # --- OpenRouter ---
 
 def call_openrouter(model: str, prompt: str) -> dict:
@@ -117,6 +131,21 @@ def load_tests() -> list[dict]:
 
 def save_tests(tests: list[dict]):
     get_tests_file().write_text(json.dumps(tests, indent=2))
+
+
+def get_evaluations_file() -> Path:
+    return DATA_DIR / "evaluations.json"
+
+
+def load_evaluations() -> list[dict]:
+    f = get_evaluations_file()
+    if f.exists():
+        return json.loads(f.read_text())
+    return []
+
+
+def save_evaluations(evaluations: list[dict]):
+    get_evaluations_file().write_text(json.dumps(evaluations, indent=2, ensure_ascii=False))
 
 
 # --- Endpoints ---
@@ -195,6 +224,43 @@ def delete_test(test_id: str):
 @app.get("/api/health")
 def health():
     return {"status": "ok", "api_key_configured": bool(API_KEY)}
+
+
+# --- Evaluations ---
+
+@app.get("/api/evaluations")
+def get_evaluations():
+    """Get all evaluations."""
+    return {"evaluations": load_evaluations()}
+
+
+@app.post("/api/evaluations")
+def save_evaluation(evaluation: Evaluation):
+    """Save an evaluation."""
+    evaluations = load_evaluations()
+
+    # Update if exists, otherwise append
+    found = False
+    for i, e in enumerate(evaluations):
+        if e["id"] == evaluation.id:
+            evaluations[i] = evaluation.model_dump()
+            found = True
+            break
+
+    if not found:
+        evaluations.insert(0, evaluation.model_dump())
+
+    save_evaluations(evaluations)
+    return {"ok": True}
+
+
+@app.delete("/api/evaluations/{evaluation_id}")
+def delete_evaluation(evaluation_id: str):
+    """Delete an evaluation."""
+    evaluations = load_evaluations()
+    evaluations = [e for e in evaluations if e["id"] != evaluation_id]
+    save_evaluations(evaluations)
+    return {"ok": True}
 
 
 # Serve React app for all non-API routes
