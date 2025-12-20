@@ -8,6 +8,7 @@
     pkgs.python311Packages.python-dotenv
     pkgs.python311Packages.pydantic
     pkgs.python311Packages.pyyaml
+    pkgs.python311Packages.supabase
     pkgs.nodejs_20
   ];
 }

@@ -5,7 +5,6 @@ Prompting Playground - FastAPI Backend
 import os
 import json
 import httpx
-import uuid
 import yaml
 from datetime import datetime
 from pathlib import Path
@@ -15,6 +14,7 @@ from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
 from dotenv import load_dotenv
+from supabase import create_client, Client
 
 load_dotenv()
 
@@ -33,12 +33,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATA_DIR = Path(__file__).parent.parent / "data"
-DATA_DIR.mkdir(exist_ok=True)
-
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 
 API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+
+# Supabase
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ioliglflghhanbkfudzd.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvbGlnbGZsZ2hoYW5ia2Z1ZHpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEzNzQwMzcsImV4cCI6MjA1Njk1MDAzN30.Vgx0n1uMB46kWfI02sWVZ8xjRzRTTV8GT235GMBRW30")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 # --- Models ---
@@ -120,38 +122,6 @@ def call_openrouter(model: str, prompt: str, max_tokens: int = 4096) -> dict:
         }
 
 
-# --- Storage ---
-
-def get_tests_file() -> Path:
-    return DATA_DIR / "tests.json"
-
-
-def load_tests() -> list[dict]:
-    f = get_tests_file()
-    if f.exists():
-        return json.loads(f.read_text())
-    return []
-
-
-def save_tests(tests: list[dict]):
-    get_tests_file().write_text(json.dumps(tests, indent=2))
-
-
-def get_evaluations_file() -> Path:
-    return DATA_DIR / "evaluations.json"
-
-
-def load_evaluations() -> list[dict]:
-    f = get_evaluations_file()
-    if f.exists():
-        return json.loads(f.read_text())
-    return []
-
-
-def save_evaluations(evaluations: list[dict]):
-    get_evaluations_file().write_text(json.dumps(evaluations, indent=2, ensure_ascii=False))
-
-
 # --- Endpoints ---
 
 @app.get("/api/models")
@@ -231,42 +201,46 @@ def run_prompt_stream(req: RunRequest):
 
 @app.get("/api/tests")
 def get_tests():
-    """Get saved tests."""
-    return {"tests": load_tests()}
+    """Get saved tests from Supabase."""
+    try:
+        response = supabase.table("prompt_tests").select("*").order("created_at", desc=True).execute()
+        return {"tests": response.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/tests")
 def save_test(test: SavedTest):
-    """Save a test."""
-    tests = load_tests()
-
-    # Update if exists, otherwise append
-    found = False
-    for i, t in enumerate(tests):
-        if t["id"] == test.id:
-            tests[i] = test.model_dump()
-            found = True
-            break
-
-    if not found:
-        tests.insert(0, test.model_dump())
-
-    save_tests(tests)
-    return {"ok": True}
+    """Save a test to Supabase."""
+    try:
+        data = {
+            "id": test.id,
+            "name": test.name,
+            "prompt": test.prompt,
+            "models": test.models,
+            "results": test.results,
+            "created_at": test.created_at
+        }
+        # Upsert - insert or update
+        supabase.table("prompt_tests").upsert(data).execute()
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.delete("/api/tests/{test_id}")
 def delete_test(test_id: str):
-    """Delete a test."""
-    tests = load_tests()
-    tests = [t for t in tests if t["id"] != test_id]
-    save_tests(tests)
-    return {"ok": True}
+    """Delete a test from Supabase."""
+    try:
+        supabase.table("prompt_tests").delete().eq("id", test_id).execute()
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "api_key_configured": bool(API_KEY)}
+    return {"status": "ok", "api_key_configured": bool(API_KEY), "supabase_configured": bool(SUPABASE_URL)}
 
 
 # --- Templates ---
@@ -294,37 +268,46 @@ def get_templates():
 
 @app.get("/api/evaluations")
 def get_evaluations():
-    """Get all evaluations."""
-    return {"evaluations": load_evaluations()}
+    """Get all evaluations from Supabase."""
+    try:
+        response = supabase.table("prompt_evaluations").select("*").order("created_at", desc=True).execute()
+        return {"evaluations": response.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/evaluations")
 def save_evaluation(evaluation: Evaluation):
-    """Save an evaluation."""
-    evaluations = load_evaluations()
-
-    # Update if exists, otherwise append
-    found = False
-    for i, e in enumerate(evaluations):
-        if e["id"] == evaluation.id:
-            evaluations[i] = evaluation.model_dump()
-            found = True
-            break
-
-    if not found:
-        evaluations.insert(0, evaluation.model_dump())
-
-    save_evaluations(evaluations)
-    return {"ok": True}
+    """Save an evaluation to Supabase."""
+    try:
+        data = {
+            "id": evaluation.id,
+            "test_id": evaluation.test_id,
+            "test_name": evaluation.test_name,
+            "prompt": evaluation.prompt,
+            "model": evaluation.model,
+            "response": evaluation.response,
+            "rating": evaluation.rating,
+            "comment": evaluation.comment,
+            "input_tokens": evaluation.input_tokens,
+            "output_tokens": evaluation.output_tokens,
+            "created_at": evaluation.created_at
+        }
+        # Upsert - insert or update
+        supabase.table("prompt_evaluations").upsert(data).execute()
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.delete("/api/evaluations/{evaluation_id}")
 def delete_evaluation(evaluation_id: str):
-    """Delete an evaluation."""
-    evaluations = load_evaluations()
-    evaluations = [e for e in evaluations if e["id"] != evaluation_id]
-    save_evaluations(evaluations)
-    return {"ok": True}
+    """Delete an evaluation from Supabase."""
+    try:
+        supabase.table("prompt_evaluations").delete().eq("id", evaluation_id).execute()
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # Handle favicon

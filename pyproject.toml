@@ -10,4 +10,5 @@ dependencies = [
     "python-dotenv",
     "pydantic",
     "pyyaml",
+    "supabase",
 ]
