@@ -20,25 +20,9 @@ const generateId = () => {
 
 const DEFAULT_TEMPLATES = [
   {
-    id: 'expert',
-    name: 'Expert Analysis',
-    description: 'Professional expert template',
-    template: `You are an expert {{role}} specializing in {{field}}.
-
-Your task is to {{task description}}.
-
-Please ensure your response is:
-1. {{tone}}
-2. Concise but comprehensive
-3. Formatted as {{format}}
-
-Context:
-{{context}}`
-  },
-  {
-    id: 'simple',
-    name: 'Simple Task',
-    description: 'Direct prompt',
+    id: 'baseline',
+    name: 'Baseline',
+    description: 'Direct prompt without techniques',
     template: '{{task}}'
   }
 ]
@@ -62,7 +46,7 @@ export default function App() {
   // Load data on mount
   useEffect(() => {
     fetchModels()
-    fetchTemplates()
+    // fetchTemplates() - disabled, templates added via UI
     fetchTests()
   }, [])
 
