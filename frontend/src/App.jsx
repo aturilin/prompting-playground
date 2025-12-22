@@ -174,6 +174,10 @@ export default function App() {
     setSelectedModels((prev) => prev.filter((m) => m.id !== id))
   }
 
+  const handleSetModels = (models) => {
+    setSelectedModels(models)
+  }
+
   const handleUpdateResult = (id, updates) => {
     setResults((prev) => {
       const newResults = prev.map((r) => {
@@ -401,6 +405,7 @@ export default function App() {
               selectedModels={selectedModels}
               onAdd={handleModelAdd}
               onRemove={handleModelRemove}
+              onSetModels={handleSetModels}
             />
 
             <ExperimentHistory

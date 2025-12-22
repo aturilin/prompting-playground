@@ -121,6 +121,45 @@ Key points:
 Context: {{context}}
 Target audience: {{audience}}
 Constraints: {{constraints}}`
+      },
+      costar: {
+        name: 'CO-STAR',
+        category: 'Framework',
+        content: `Context: {{context}}
+
+Objective: {{objective}}
+
+Style: {{style}}
+
+Tone: {{tone}}
+
+Audience: {{audience}}
+
+Response format: {{format}}`
+      },
+      crispe: {
+        name: 'CRISP-E',
+        category: 'Framework',
+        content: `Context: {{context}}
+
+Role: {{role}}
+
+Instruction: {{instruction}}
+
+Specificity: {{specificity}}
+
+Purpose: {{purpose}}
+
+Example: {{example}}`
+      },
+      rtf: {
+        name: 'RTF',
+        category: 'Framework',
+        content: `Role: {{role}}
+
+Task: {{task}}
+
+Format: {{format}}`
       }
     }
   },
@@ -244,6 +283,48 @@ Constraints: {{constraints}}`
 Контекст: {{context}}
 Целевая аудитория: {{аудитория}}
 Ограничения: {{ограничения}}`
+      },
+      costar: {
+        name: 'CO-STAR',
+        category: 'Фреймворки',
+        description: 'Для контента где важен тон и аудитория',
+        content: `Context: {{context}}
+
+Objective: {{objective}}
+
+Style: {{style}}
+
+Tone: {{tone}}
+
+Audience: {{audience}}
+
+Response format: {{format}}`
+      },
+      crispe: {
+        name: 'CRISP-E',
+        category: 'Фреймворки',
+        description: 'Когда есть пример желаемого результата',
+        content: `Context: {{context}}
+
+Role: {{role}}
+
+Instruction: {{instruction}}
+
+Specificity: {{specificity}}
+
+Purpose: {{purpose}}
+
+Example: {{example}}`
+      },
+      rtf: {
+        name: 'RTF',
+        category: 'Фреймворки',
+        description: 'Минималистичный, для быстрых задач',
+        content: `Role: {{role}}
+
+Task: {{task}}
+
+Format: {{format}}`
       }
     }
   }

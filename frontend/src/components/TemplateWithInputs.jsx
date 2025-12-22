@@ -21,14 +21,16 @@ export function TemplateWithInputs({ template, values, onChange, onTemplateChang
 
   const renderTemplateWithInputs = () => {
     if (!template) return null
-    const parts = template.split(/(\{\{[\w\s-а-яА-ЯёЁ]+\}\})/g)
+    // Match any characters between {{ and }} (including Cyrillic)
+    const parts = template.split(/(\{\{[^}]+\}\})/g)
 
     return parts.map((part, i) => {
-      if (part.match(/^\{\{[\w\s-а-яА-ЯёЁ]+\}\}$/)) {
+      if (part.match(/^\{\{[^}]+\}\}$/)) {
         const varName = part.slice(2, -2).trim()
         const value = values[varName] || ''
         const isFocused = focusedVar === varName
-        const isLargeText = ['context', 'task'].includes(varName.toLowerCase())
+        const varNameLower = varName.toLowerCase()
+        const isLargeText = ['context', 'task', 'контекст', 'задача', 'код', 'code'].includes(varNameLower)
 
         // Large text field (textarea) for context and task
         if (isLargeText) {

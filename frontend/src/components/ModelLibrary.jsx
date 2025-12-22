@@ -1,9 +1,48 @@
 import React, { useMemo, useState } from 'react'
-import { Zap, Plus, Trash2, X, Search, Cpu, Brain, Sparkles } from 'lucide-react'
+import { Zap, Plus, Trash2, X, Search, Cpu, Brain, Sparkles, Package } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '../i18n'
 
-export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove }) {
+// Пресеты моделей
+const MODEL_PRESETS = {
+  finalists: {
+    name: 'Финалисты (12)',
+    models: [
+      'openai/gpt-5.2-chat',
+      'openai/gpt-5.2',
+      'openai/gpt-5.1-chat',
+      'google/gemini-3-pro-preview',
+      'google/gemini-3-flash-preview',
+      'anthropic/claude-opus-4.5',
+      'deepseek/deepseek-v3.2-speciale',
+      'nex-agi/deepseek-v3.1-nex-n1:free',
+      'x-ai/grok-4.1-fast',
+      'mistralai/devstral-2512:free',
+      'minimax/minimax-m2',
+      'tngtech/tng-r1t-chimera:free',
+    ]
+  },
+  top5: {
+    name: 'Топ-5',
+    models: [
+      'openai/gpt-5.2-chat',
+      'google/gemini-3-pro-preview',
+      'anthropic/claude-opus-4.5',
+      'deepseek/deepseek-v3.2-speciale',
+      'x-ai/grok-4.1-fast',
+    ]
+  },
+  free: {
+    name: 'Бесплатные',
+    models: [
+      'nex-agi/deepseek-v3.1-nex-n1:free',
+      'mistralai/devstral-2512:free',
+      'tngtech/tng-r1t-chimera:free',
+    ]
+  }
+}
+
+export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove, onSetModels }) {
   const { t } = useLanguage()
   const [showAddModal, setShowAddModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -23,6 +62,13 @@ export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove 
     onAdd(model)
     setShowAddModal(false)
     setSearchQuery('')
+  }
+
+  const handleSelectPreset = (presetKey) => {
+    const preset = MODEL_PRESETS[presetKey]
+    if (!preset || !onSetModels) return
+    const models = availableModels.filter(m => preset.models.includes(m.id))
+    onSetModels(models)
   }
 
   const getProviderIcon = (modelId) => {
@@ -138,6 +184,22 @@ export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove 
           </>
         )}
       </AnimatePresence>
+
+      {/* Presets */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {Object.entries(MODEL_PRESETS).map(([key, preset]) => (
+          <button
+            key={key}
+            onClick={() => handleSelectPreset(key)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-neutral-100 hover:bg-blue-100 text-neutral-700 hover:text-blue-700 rounded-lg transition-colors"
+          >
+            <Package className="w-3 h-3" />
+            {preset.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="border-t border-neutral-200 mb-4" />
 
       {/* Selected Models List */}
       <div className="space-y-2">

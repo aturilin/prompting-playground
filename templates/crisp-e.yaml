@@ -1,0 +1,17 @@
+# CRISP-E framework
+name: CRISP-E
+description: Context → Role → Instruction → Specificity → Purpose → Example
+
+template: |
+  {{context}}
+
+  Ты — {{role}}.
+
+  {{instruction}}
+
+  {{specificity}}
+
+  Цель: {{purpose}}.
+
+  Пример:
+  {{example}}

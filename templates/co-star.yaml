@@ -1,0 +1,13 @@
+# CO-STAR framework
+name: CO-STAR
+description: Context → Objective → Style → Tone → Audience → Response format
+
+template: |
+  {{context}}
+
+  Напиши {{objective}}.
+
+  Стиль: {{style}}.
+  Тон: {{tone}}.
+  Аудитория: {{audience}}.
+  Формат: {{format}}.

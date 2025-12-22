@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { FileText, Plus, Trash2, Check, X, Search, Sparkles, Code, MessageSquare, Mail, Brain } from 'lucide-react'
+import { FileText, Plus, Trash2, Check, X, Search, Sparkles, Code, MessageSquare, Mail, Brain, LayoutTemplate } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '../i18n'
 
@@ -12,28 +12,16 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
 
   const STARTER_TEMPLATES = [
     {
-      key: 'expertAnalysis',
-      icon: Sparkles,
+      key: 'costar',
+      icon: LayoutTemplate,
     },
     {
-      key: 'simpleTask',
-      icon: FileText,
+      key: 'crispe',
+      icon: LayoutTemplate,
     },
     {
-      key: 'codeReview',
-      icon: Code,
-    },
-    {
-      key: 'contentWriter',
-      icon: MessageSquare,
-    },
-    {
-      key: 'emailGenerator',
-      icon: Mail,
-    },
-    {
-      key: 'brainstorming',
-      icon: Brain,
+      key: 'rtf',
+      icon: LayoutTemplate,
     },
   ]
 
@@ -42,6 +30,7 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
     return {
       name: data?.name || key,
       category: data?.category || '',
+      description: data?.description || '',
       content: data?.content || '{{task}}'
     }
   }
@@ -170,7 +159,7 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium text-neutral-900">{starter.name}</div>
-                              <div className="text-xs text-neutral-500">{starter.category}</div>
+                              <div className="text-xs text-neutral-500">{starter.description || starter.category}</div>
                             </div>
                           </div>
                         </motion.button>

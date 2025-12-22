@@ -1,0 +1,10 @@
+# RTF framework (минималистичный)
+name: RTF
+description: Role → Task → Format
+
+template: |
+  Ты — {{role}}.
+
+  {{task}}
+
+  Формат: {{format}}.
