@@ -1,8 +1,0 @@
-# Emotional Appeal (+8-10% quality)
-name: EMOTIONAL
-description: Add emotional stakes for quality boost
-
-template: |
-  {{task}}
-
-  This is very important to my career. Take pride in your work and give it your best.
