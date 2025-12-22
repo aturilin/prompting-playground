@@ -122,24 +122,42 @@ Context: {{context}}
 Target audience: {{audience}}
 Constraints: {{constraints}}`
       },
-      costar: {
-        name: 'CO-STAR',
+      ape: {
+        name: 'APE',
         category: 'Framework',
-        content: `Context: {{context}}
+        description: 'Simplest. 80% of routine tasks: posts, short emails',
+        content: `Action: {{action}}
 
-Objective: {{objective}}
+Purpose: {{purpose}}
 
-Style: {{style}}
+Expectation: {{expectation}}`
+      },
+      rtf: {
+        name: 'RTF',
+        category: 'Framework',
+        description: 'Minimalist, for quick tasks',
+        content: `Role: {{role}}
 
-Tone: {{tone}}
+Task: {{task}}
 
-Audience: {{audience}}
+Format: {{format}}`
+      },
+      race: {
+        name: 'RACE',
+        category: 'Framework',
+        description: 'Expert focus. Role is critical',
+        content: `Role: {{role}}
 
-Response format: {{format}}`
+Action: {{action}}
+
+Context: {{context}}
+
+Expectation: {{expectation}}`
       },
       crispe: {
         name: 'CRISP-E',
         category: 'Framework',
+        description: 'When you have an example of desired result',
         content: `Context: {{context}}
 
 Role: {{role}}
@@ -152,14 +170,36 @@ Purpose: {{purpose}}
 
 Example: {{example}}`
       },
-      rtf: {
-        name: 'RTF',
+      costar: {
+        name: 'CO-STAR',
         category: 'Framework',
+        description: 'Maximum control of style and tone',
+        content: `Context: {{context}}
+
+Objective: {{objective}}
+
+Style: {{style}}
+
+Tone: {{tone}}
+
+Audience: {{audience}}
+
+Response format: {{format}}`
+      },
+      risen: {
+        name: 'RISEN',
+        category: 'Framework',
+        description: 'Multi-step tasks. Steps activates Chain-of-Thought',
         content: `Role: {{role}}
 
-Task: {{task}}
+Instructions: {{instructions}}
 
-Format: {{format}}`
+Steps:
+{{steps}}
+
+End goal: {{end_goal}}
+
+Narrowing: {{narrowing}}`
       }
     }
   },
@@ -284,21 +324,37 @@ Format: {{format}}`
 Целевая аудитория: {{аудитория}}
 Ограничения: {{ограничения}}`
       },
-      costar: {
-        name: 'CO-STAR',
+      ape: {
+        name: 'APE',
         category: 'Фреймворки',
-        description: 'Для контента где важен тон и аудитория',
-        content: `Context: {{context}}
+        description: 'Простейший. 80% рутинных задач: посты, письма',
+        content: `Action: {{action}}
 
-Objective: {{objective}}
+Purpose: {{purpose}}
 
-Style: {{style}}
+Expectation: {{expectation}}`
+      },
+      rtf: {
+        name: 'RTF',
+        category: 'Фреймворки',
+        description: 'Минималистичный, для быстрых задач',
+        content: `Role: {{role}}
 
-Tone: {{tone}}
+Task: {{task}}
 
-Audience: {{audience}}
+Format: {{format}}`
+      },
+      race: {
+        name: 'RACE',
+        category: 'Фреймворки',
+        description: 'Экспертный фокус. Роль критически важна',
+        content: `Role: {{role}}
 
-Response format: {{format}}`
+Action: {{action}}
+
+Context: {{context}}
+
+Expectation: {{expectation}}`
       },
       crispe: {
         name: 'CRISP-E',
@@ -316,15 +372,36 @@ Purpose: {{purpose}}
 
 Example: {{example}}`
       },
-      rtf: {
-        name: 'RTF',
+      costar: {
+        name: 'CO-STAR',
         category: 'Фреймворки',
-        description: 'Минималистичный, для быстрых задач',
+        description: 'Максимальный контроль стиля и тона',
+        content: `Context: {{context}}
+
+Objective: {{objective}}
+
+Style: {{style}}
+
+Tone: {{tone}}
+
+Audience: {{audience}}
+
+Response format: {{format}}`
+      },
+      risen: {
+        name: 'RISEN',
+        category: 'Фреймворки',
+        description: 'Многоэтапные задачи. Steps активирует Chain-of-Thought',
         content: `Role: {{role}}
 
-Task: {{task}}
+Instructions: {{instructions}}
 
-Format: {{format}}`
+Steps:
+{{steps}}
+
+End goal: {{end_goal}}
+
+Narrowing: {{narrowing}}`
       }
     }
   }

@@ -12,7 +12,15 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
 
   const STARTER_TEMPLATES = [
     {
-      key: 'costar',
+      key: 'ape',
+      icon: LayoutTemplate,
+    },
+    {
+      key: 'rtf',
+      icon: LayoutTemplate,
+    },
+    {
+      key: 'race',
       icon: LayoutTemplate,
     },
     {
@@ -20,7 +28,11 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
       icon: LayoutTemplate,
     },
     {
-      key: 'rtf',
+      key: 'costar',
+      icon: LayoutTemplate,
+    },
+    {
+      key: 'risen',
       icon: LayoutTemplate,
     },
   ]
