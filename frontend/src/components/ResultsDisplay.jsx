@@ -1,9 +1,23 @@
 import React, { useState } from 'react'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, Save } from 'lucide-react'
 import { StarRating } from './StarRating'
 
-export function ResultsDisplay({ results, onUpdateResult }) {
+export function ResultsDisplay({ results, onUpdateResult, onSaveEvaluation }) {
   const [copiedId, setCopiedId] = useState(null)
+  const [savedIds, setSavedIds] = useState(new Set())
+
+  const handleSave = (result) => {
+    const id = result.id || result.model
+    onSaveEvaluation(result)
+    setSavedIds(prev => new Set([...prev, id]))
+    setTimeout(() => {
+      setSavedIds(prev => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
+    }, 2000)
+  }
 
   const handleCopy = (result) => {
     navigator.clipboard.writeText(result.content)
@@ -83,6 +97,29 @@ export function ResultsDisplay({ results, onUpdateResult }) {
                       className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                       rows={2}
                     />
+                    {(result.rating || result.comment) && (
+                      <button
+                        onClick={() => handleSave(result)}
+                        disabled={savedIds.has(result.id || result.model)}
+                        className={`mt-2 flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                          savedIds.has(result.id || result.model)
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : 'bg-blue-500 text-white hover:bg-blue-600'
+                        }`}
+                      >
+                        {savedIds.has(result.id || result.model) ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            Saved
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4" />
+                            Save Review
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </>
               )}

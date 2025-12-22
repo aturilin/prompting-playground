@@ -190,12 +190,7 @@ export default function App() {
     setResults((prev) => {
       const newResults = prev.map((r) => {
         if ((r.id || r.model) === id) {
-          const updated = { ...r, ...updates }
-          // Auto-save evaluation when rating is set
-          if (updates.rating) {
-            handleSaveEvaluation(updated)
-          }
-          return updated
+          return { ...r, ...updates }
         }
         return r
       })
@@ -484,7 +479,7 @@ export default function App() {
 
             {/* Results */}
             <div ref={resultsRef}>
-              <ResultsDisplay results={results} onUpdateResult={handleUpdateResult} />
+              <ResultsDisplay results={results} onUpdateResult={handleUpdateResult} onSaveEvaluation={handleSaveEvaluation} />
             </div>
           </motion.div>
         </div>
