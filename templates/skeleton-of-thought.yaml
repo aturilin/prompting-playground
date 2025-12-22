@@ -1,0 +1,12 @@
+# Skeleton-of-Thought - outline first, then expand
+name: SKELETON
+description: Generate outline first, then expand each point (2.39x speed)
+
+template: |
+  {{task}}
+
+  Phase 1 - Skeleton:
+  First, create an outline with 4-5 key points. Output ONLY the headers.
+
+  Phase 2 - Expansion:
+  Then expand each point with 2-3 sentences and specific details.

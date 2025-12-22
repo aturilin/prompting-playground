@@ -1,0 +1,20 @@
+# Hierarchical Generation (Dramatron style)
+name: HIERARCHICAL
+description: Build content layer by layer for consistency
+
+template: |
+  {{task}}
+
+  Generate in layers:
+
+  Level 1 - Core Idea:
+  One sentence summary.
+
+  Level 2 - Key Points:
+  3-5 supporting elements.
+
+  Level 3 - Details:
+  Expand each point with specifics.
+
+  Level 4 - Final:
+  Combine into cohesive output.

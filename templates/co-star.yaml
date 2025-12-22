@@ -1,0 +1,22 @@
+# CO-STAR Framework - Gold Standard
+name: CO-STAR
+description: Structured framework with style and tone control
+
+template: |
+  # Context
+  {{context}}
+
+  # Objective
+  {{task}}
+
+  # Style
+  {{style}}
+
+  # Tone
+  {{tone}}
+
+  # Audience
+  {{audience}}
+
+  # Response Format
+  {{format}}

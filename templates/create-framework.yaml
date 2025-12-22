@@ -1,0 +1,23 @@
+# CREATE Framework - для креативных задач
+name: CREATE
+description: Best for marketing, copywriting, creative writing
+
+template: |
+  # Character
+  {{character}}
+
+  # Request
+  {{task}}
+
+  # Examples
+  Good: {{good_example}}
+  Bad: {{bad_example}}
+
+  # Adjustments
+  {{constraints}}
+
+  # Type of Output
+  {{output_format}}
+
+  # Extras
+  {{extras}}

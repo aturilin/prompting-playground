@@ -1,0 +1,16 @@
+# Iterative Refinement - draft, critique, improve
+name: ITERATIVE
+description: Self-critique and improvement cycle
+
+template: |
+  Phase 1 - Draft:
+  {{task}}
+
+  Phase 2 - Critique:
+  Review your draft. Find 3 specific weaknesses:
+  1. Where is it generic or cliche?
+  2. Where lacks specificity?
+  3. What won't engage the reader?
+
+  Phase 3 - Improve:
+  Rewrite addressing all 3 weaknesses.
