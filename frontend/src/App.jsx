@@ -4,7 +4,9 @@ import { ModelLibrary } from './components/ModelLibrary'
 import { ResultsDisplay } from './components/ResultsDisplay'
 import { ExperimentHistory } from './components/ExperimentHistory'
 import { TemplateLibrary } from './components/TemplateLibrary'
+import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { Toast } from './components/Toast'
+import { useLanguage } from './i18n'
 import { Sparkles, Copy, Check, Play, ArrowRight, Save } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -28,6 +30,8 @@ const DEFAULT_TEMPLATES = [
 ]
 
 export default function App() {
+  const { t } = useLanguage()
+
   // State
   const [templates, setTemplates] = useState(DEFAULT_TEMPLATES)
   const [selectedTemplateId, setSelectedTemplateId] = useState(DEFAULT_TEMPLATES[0].id)
@@ -351,26 +355,29 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-neutral-900">Prompt Studio</h1>
-              <p className="text-xs text-neutral-500 mt-0.5">Compare AI models side-by-side</p>
+              <p className="text-xs text-neutral-500 mt-0.5">{t('subtitle')}</p>
             </div>
           </div>
 
-          <button
-            onClick={copyToClipboard}
-            className="group flex items-center gap-2.5 px-4 py-2 bg-white border border-neutral-200 hover:border-neutral-300 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 transition-all shadow-sm hover:shadow"
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
-                <span className="text-emerald-600">Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4" strokeWidth={2.5} />
-                Copy Prompt
-              </>
-            )}
-          </button>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <button
+              onClick={copyToClipboard}
+              className="group flex items-center gap-2.5 px-4 py-2 bg-white border border-neutral-200 hover:border-neutral-300 rounded-xl text-sm font-medium text-neutral-700 hover:text-neutral-900 transition-all shadow-sm hover:shadow"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
+                  <span className="text-emerald-600">{t('copied')}</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" strokeWidth={2.5} />
+                  {t('copy')}
+                </>
+              )}
+            </button>
+          </div>
         </motion.header>
 
         <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
@@ -435,12 +442,12 @@ export default function App() {
                 {isRunning ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Running {selectedModels.length} models...</span>
+                    <span>{t('running')} {selectedModels.length} {t('modelsText')}...</span>
                   </>
                 ) : (
                   <>
                     <Play className="w-5 h-5" strokeWidth={2.5} fill="currentColor" />
-                    <span>Run Test</span>
+                    <span>{t('runTest')}</span>
                     <ArrowRight className="w-4 h-4 opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0 transition-all" strokeWidth={2.5} />
                   </>
                 )}
@@ -456,7 +463,7 @@ export default function App() {
                   className="flex items-center gap-2 px-6 py-3.5 bg-white border border-neutral-200 hover:border-neutral-300 rounded-2xl font-semibold text-base text-neutral-700 hover:text-neutral-900 transition-all shadow-sm hover:shadow"
                 >
                   <Save className="w-5 h-5" strokeWidth={2.5} />
-                  <span>Save Test</span>
+                  <span>{t('saveTest')}</span>
                 </motion.button>
               )}
             </div>

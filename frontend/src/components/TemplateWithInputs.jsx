@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { Code2, Check, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '../i18n'
 
 export function TemplateWithInputs({ template, values, onChange, onTemplateChange }) {
+  const { t } = useLanguage()
   const [isEditingTemplate, setIsEditingTemplate] = useState(false)
   const [editedTemplate, setEditedTemplate] = useState(template)
   const [focusedVar, setFocusedVar] = useState(null)
@@ -19,14 +21,42 @@ export function TemplateWithInputs({ template, values, onChange, onTemplateChang
 
   const renderTemplateWithInputs = () => {
     if (!template) return null
-    const parts = template.split(/(\{\{[\w\s-]+\}\})/g)
+    const parts = template.split(/(\{\{[\w\s-а-яА-ЯёЁ]+\}\})/g)
 
     return parts.map((part, i) => {
-      if (part.match(/^\{\{[\w\s-]+\}\}$/)) {
+      if (part.match(/^\{\{[\w\s-а-яА-ЯёЁ]+\}\}$/)) {
         const varName = part.slice(2, -2).trim()
         const value = values[varName] || ''
         const isFocused = focusedVar === varName
+        const isLargeText = ['context', 'task'].includes(varName.toLowerCase())
 
+        // Large text field (textarea) for context and task
+        if (isLargeText) {
+          return (
+            <div key={i} className="block w-full my-2">
+              <label className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-1.5 block">
+                {varName}
+              </label>
+              <textarea
+                value={value}
+                onChange={(e) => onChange(varName, e.target.value)}
+                onFocus={() => setFocusedVar(varName)}
+                onBlur={() => setFocusedVar(null)}
+                placeholder={`${t('enterField')} ${varName.replace(/_/g, ' ')}...`}
+                rows={6}
+                className={`
+                  w-full px-4 py-3 rounded-xl font-normal text-sm transition-all duration-200 border resize-y
+                  ${isFocused
+                    ? 'bg-white text-neutral-900 border-neutral-900 ring-4 ring-neutral-900/10'
+                    : 'bg-neutral-50 text-neutral-900 border-neutral-200 hover:border-neutral-300'}
+                  placeholder:text-neutral-400 focus:outline-none
+                `}
+              />
+            </div>
+          )
+        }
+
+        // Regular inline input for other variables
         return (
           <span key={i} className="inline-flex items-center relative group my-0.5">
             <input
@@ -78,10 +108,10 @@ export function TemplateWithInputs({ template, values, onChange, onTemplateChang
           </div>
           <div>
             <h2 className="text-sm font-semibold text-neutral-900">
-              {isEditingTemplate ? 'Edit Template' : 'Prompt Template'}
+              {isEditingTemplate ? t('editTemplate') : t('promptTemplate')}
             </h2>
             <p className="text-xs text-neutral-500 mt-0.5">
-              {isEditingTemplate ? 'Modify template structure' : 'Fill in the variables'}
+              {isEditingTemplate ? t('modifyStructure') : t('fillVariables')}
             </p>
           </div>
         </div>
@@ -90,11 +120,11 @@ export function TemplateWithInputs({ template, values, onChange, onTemplateChang
           {isEditingTemplate ? (
             <>
               <button onClick={handleCancelEdit} className="px-3 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors">
-                Cancel
+                {t('cancel')}
               </button>
               <button onClick={handleSaveTemplate} className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium rounded-lg transition-colors">
                 <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
-                Save
+                {t('save')}
               </button>
             </>
           ) : (
@@ -103,7 +133,7 @@ export function TemplateWithInputs({ template, values, onChange, onTemplateChang
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors"
             >
               <Code2 className="w-3.5 h-3.5" strokeWidth={2.5} />
-              Edit
+              {t('edit')}
             </button>
           )}
         </div>
@@ -122,7 +152,7 @@ export function TemplateWithInputs({ template, values, onChange, onTemplateChang
               onChange={(e) => setEditedTemplate(e.target.value)}
               className="absolute inset-0 w-full h-full p-6 bg-neutral-50 font-mono text-sm leading-relaxed text-neutral-900 resize-none focus:outline-none"
               spellCheck={false}
-              placeholder="Enter your template with {{variables}}..."
+              placeholder={t('enterTemplate')}
             />
           ) : (
             <motion.div

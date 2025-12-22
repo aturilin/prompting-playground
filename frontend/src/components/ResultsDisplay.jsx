@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { Copy, Check, Save } from 'lucide-react'
 import { StarRating } from './StarRating'
+import { useLanguage } from '../i18n'
 
 export function ResultsDisplay({ results, onUpdateResult, onSaveEvaluation }) {
+  const { t } = useLanguage()
   const [copiedId, setCopiedId] = useState(null)
   const [savedIds, setSavedIds] = useState(new Set())
 
@@ -30,7 +32,7 @@ export function ResultsDisplay({ results, onUpdateResult, onSaveEvaluation }) {
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-neutral-900 flex items-center gap-2">
-        Results
+        {t('results')}
         <span className="px-2 py-0.5 bg-neutral-100 text-neutral-600 rounded-full text-xs">
           {results.length}
         </span>
@@ -81,7 +83,7 @@ export function ResultsDisplay({ results, onUpdateResult, onSaveEvaluation }) {
                   </div>
 
                   <div className="flex items-center gap-3 pt-3 border-t border-neutral-100 mb-3">
-                    <span className="text-xs font-medium text-neutral-500">Quality:</span>
+                    <span className="text-xs font-medium text-neutral-500">{t('quality')}</span>
                     <StarRating
                       rating={result.rating || 0}
                       onChange={(rating) => onUpdateResult(result.id || result.model, { rating })}
@@ -89,11 +91,11 @@ export function ResultsDisplay({ results, onUpdateResult, onSaveEvaluation }) {
                   </div>
 
                   <div className="pt-3 border-t border-neutral-100">
-                    <label className="block text-xs font-medium text-neutral-500 mb-2">Notes:</label>
+                    <label className="block text-xs font-medium text-neutral-500 mb-2">{t('notes')}</label>
                     <textarea
                       value={result.comment || ''}
                       onChange={(e) => onUpdateResult(result.id || result.model, { comment: e.target.value })}
-                      placeholder="Add your notes about this response..."
+                      placeholder={t('addNotes')}
                       className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                       rows={2}
                     />
@@ -110,12 +112,12 @@ export function ResultsDisplay({ results, onUpdateResult, onSaveEvaluation }) {
                         {savedIds.has(result.id || result.model) ? (
                           <>
                             <Check className="w-4 h-4" />
-                            Saved
+                            {t('saved')}
                           </>
                         ) : (
                           <>
                             <Save className="w-4 h-4" />
-                            Save Review
+                            {t('saveReview')}
                           </>
                         )}
                       </button>

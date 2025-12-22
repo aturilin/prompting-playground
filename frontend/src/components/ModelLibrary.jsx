@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react'
 import { Zap, Plus, Trash2, X, Search, Cpu, Brain, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '../i18n'
 
 export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove }) {
+  const { t } = useLanguage()
   const [showAddModal, setShowAddModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -45,7 +47,7 @@ export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove 
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-neutral-400" />
-          <h3 className="text-sm font-semibold text-neutral-900">Models</h3>
+          <h3 className="text-sm font-semibold text-neutral-900">{t('models')}</h3>
         </div>
         {unselectedModels.length > 0 && (
           <button
@@ -53,7 +55,7 @@ export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove 
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
-            Add
+            {t('addModel')}
           </button>
         )}
       </div>
@@ -80,8 +82,8 @@ export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove 
                 <div className="px-6 py-5 border-b border-neutral-100 bg-gradient-to-b from-neutral-50 to-white flex-shrink-0">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h2 className="text-lg font-semibold text-neutral-900">Add Model</h2>
-                      <p className="text-sm text-neutral-500 mt-0.5">Select a model to add</p>
+                      <h2 className="text-lg font-semibold text-neutral-900">{t('addModelTitle')}</h2>
+                      <p className="text-sm text-neutral-500 mt-0.5">{t('selectModel')}</p>
                     </div>
                     <button onClick={() => setShowAddModal(false)} className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors">
                       <X className="w-5 h-5" />
@@ -93,7 +95,7 @@ export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove 
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search models..."
+                      placeholder={t('searchModels')}
                       className="w-full pl-10 pr-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     />
                   </div>
@@ -102,7 +104,7 @@ export function ModelLibrary({ availableModels, selectedModels, onAdd, onRemove 
                   <div className="space-y-2">
                     {filteredModels.length === 0 ? (
                       <div className="text-center py-8 text-neutral-500 text-sm">
-                        {searchQuery ? 'No models found' : 'All models added'}
+                        {searchQuery ? t('noModelsFound') : t('allModelsAdded')}
                       </div>
                     ) : (
                       filteredModels.map((model, index) => {

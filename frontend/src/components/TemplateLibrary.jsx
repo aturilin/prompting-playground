@@ -1,93 +1,62 @@
 import React, { useMemo, useState } from 'react'
-import { FileText, Plus, Trash2, Check, X, Search, Sparkles, Code, MessageSquare, Mail, Brain, Users, FileCode, Zap } from 'lucide-react'
+import { FileText, Plus, Trash2, Check, X, Search, Sparkles, Code, MessageSquare, Mail, Brain } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const STARTER_TEMPLATES = [
-  {
-    name: 'Expert Analysis',
-    icon: Sparkles,
-    category: 'Professional',
-    content: `You are an expert {{role}} specializing in {{field}}.
-
-Your task is to {{task description}}.
-
-Please ensure your response is:
-1. {{tone}}
-2. Concise but comprehensive
-3. Formatted as {{format}}
-
-Context:
-{{context}}`,
-  },
-  {
-    name: 'Simple Task',
-    icon: FileText,
-    category: 'Basic',
-    content: '{{task}}',
-  },
-  {
-    name: 'Code Review',
-    icon: Code,
-    category: 'Technical',
-    content: `Review the following {{language}} code:
-
-{{code}}
-
-Focus on:
-- Code quality and best practices
-- Potential bugs or issues
-- Performance considerations
-- Suggestions for improvement`,
-  },
-  {
-    name: 'Content Writer',
-    icon: MessageSquare,
-    category: 'Creative',
-    content: `Write a {{content type}} about {{topic}}.
-
-Tone: {{tone}}
-Target audience: {{audience}}
-Length: {{length}}
-
-Requirements:
-{{requirements}}`,
-  },
-  {
-    name: 'Email Generator',
-    icon: Mail,
-    category: 'Business',
-    content: `Write a {{email type}} email to {{recipient}}.
-
-Purpose: {{purpose}}
-Tone: {{tone}}
-Key points:
-{{key points}}`,
-  },
-  {
-    name: 'Brainstorming',
-    icon: Brain,
-    category: 'Creative',
-    content: `Generate {{number}} creative ideas for {{topic}}.
-
-Context: {{context}}
-Target audience: {{audience}}
-Constraints: {{constraints}}`,
-  },
-]
+import { useLanguage } from '../i18n'
 
 export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDelete }) {
+  const { t } = useLanguage()
   const [showNewModal, setShowNewModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreatingCustom, setIsCreatingCustom] = useState(false)
   const [newName, setNewName] = useState('')
 
+  const STARTER_TEMPLATES = [
+    {
+      key: 'expertAnalysis',
+      icon: Sparkles,
+    },
+    {
+      key: 'simpleTask',
+      icon: FileText,
+    },
+    {
+      key: 'codeReview',
+      icon: Code,
+    },
+    {
+      key: 'contentWriter',
+      icon: MessageSquare,
+    },
+    {
+      key: 'emailGenerator',
+      icon: Mail,
+    },
+    {
+      key: 'brainstorming',
+      icon: Brain,
+    },
+  ]
+
+  const getStarterData = (key) => {
+    const data = t(`starterTemplates.${key}`)
+    return {
+      name: data?.name || key,
+      category: data?.category || '',
+      content: data?.content || '{{task}}'
+    }
+  }
+
   const filteredStarters = useMemo(() => {
-    if (!searchQuery.trim()) return STARTER_TEMPLATES
+    const starters = STARTER_TEMPLATES.map(s => ({
+      ...s,
+      ...getStarterData(s.key)
+    }))
+    if (!searchQuery.trim()) return starters
     const query = searchQuery.toLowerCase()
-    return STARTER_TEMPLATES.filter((t) =>
+    return starters.filter((t) =>
       t.name.toLowerCase().includes(query) || t.category.toLowerCase().includes(query)
     )
-  }, [searchQuery])
+  }, [searchQuery, t])
 
   const handleCreateBlank = () => {
     setIsCreatingCustom(true)
@@ -114,14 +83,14 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-neutral-400" />
-          <h3 className="text-sm font-semibold text-neutral-900">Templates</h3>
+          <h3 className="text-sm font-semibold text-neutral-900">{t('templates')}</h3>
         </div>
         <button
           onClick={() => setShowNewModal(true)}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
         >
           <Plus className="w-3.5 h-3.5" />
-          New
+          {t('newTemplate')}
         </button>
       </div>
 
@@ -147,8 +116,8 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
                 <div className="px-6 py-5 border-b border-neutral-100 bg-gradient-to-b from-neutral-50 to-white flex-shrink-0">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h2 className="text-lg font-semibold text-neutral-900">Create New Template</h2>
-                      <p className="text-sm text-neutral-500 mt-0.5">Start from scratch or use existing</p>
+                      <h2 className="text-lg font-semibold text-neutral-900">{t('createTemplate')}</h2>
+                      <p className="text-sm text-neutral-500 mt-0.5">{t('createTemplateDesc')}</p>
                     </div>
                     <button onClick={() => setShowNewModal(false)} className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors">
                       <X className="w-5 h-5" />
@@ -160,7 +129,7 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search templates..."
+                      placeholder={t('searchTemplates')}
                       className="w-full pl-10 pr-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     />
                   </div>
@@ -176,19 +145,19 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
                           <Plus className="w-5 h-5 text-neutral-600 group-hover:text-blue-600" />
                         </div>
                         <div className="flex-1 text-left">
-                          <div className="text-sm font-semibold text-neutral-900">Blank Template</div>
-                          <div className="text-xs text-neutral-500">Start from scratch</div>
+                          <div className="text-sm font-semibold text-neutral-900">{t('blankTemplate')}</div>
+                          <div className="text-xs text-neutral-500">{t('startFromScratch')}</div>
                         </div>
                       </div>
                     </button>
                   )}
                   <div className="space-y-2">
                     {filteredStarters.length === 0 ? (
-                      <div className="text-center py-8 text-neutral-500 text-sm">No templates found</div>
+                      <div className="text-center py-8 text-neutral-500 text-sm">{t('noTemplatesFound')}</div>
                     ) : (
                       filteredStarters.map((starter, index) => (
                         <motion.button
-                          key={index}
+                          key={starter.key}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.03 }}
@@ -249,7 +218,7 @@ export function TemplateLibrary({ templates, selectedId, onSelect, onAdd, onDele
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCustom(); if (e.key === 'Escape') setIsCreatingCustom(false) }}
-              placeholder="Template name..."
+              placeholder={t('templateName')}
               className="flex-1 px-2 py-1 text-sm bg-white border border-neutral-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               autoFocus
             />
