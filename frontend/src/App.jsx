@@ -4,6 +4,7 @@ import { ModelLibrary } from './components/ModelLibrary'
 import { ResultsDisplay } from './components/ResultsDisplay'
 import { ExperimentHistory } from './components/ExperimentHistory'
 import { TemplateLibrary } from './components/TemplateLibrary'
+import { TipsPanel } from './components/TipsPanel'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
 import { Toast } from './components/Toast'
 import { useLanguage } from './i18n'
@@ -400,6 +401,8 @@ export default function App() {
               onDelete={handleTemplateDelete}
             />
 
+            <TipsPanel templateName={currentTemplate.name} />
+
             <ModelLibrary
               availableModels={availableModels}
               selectedModels={selectedModels}
@@ -425,7 +428,6 @@ export default function App() {
             {/* Template Editor */}
             <TemplateWithInputs
               template={currentTemplate.template}
-              templateName={currentTemplate.name}
               values={variableValues}
               onChange={handleVariableChange}
               onTemplateChange={handleTemplateChange}

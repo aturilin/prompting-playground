@@ -130,7 +130,9 @@ Constraints: {{constraints}}`
 
 Purpose: {{purpose}}
 
-Expectation: {{expectation}}`,
+Expectation: {{expectation}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Write a post about a new product',
           exampleAfter: `Action: Create an Instagram post about the new trainer launch
@@ -152,7 +154,9 @@ Expectation: 150-200 chars, informal tone, 3-5 hashtags`,
 
 Task: {{task}}
 
-Format: {{format}}`,
+Format: {{format}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Write product description',
           exampleAfter: `Role: E-commerce copywriter
@@ -175,7 +179,9 @@ Action: {{action}}
 
 Context: {{context}}
 
-Expectation: {{expectation}}`,
+Expectation: {{expectation}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Write a social media post about a fitness product',
           exampleAfter: `Role: Professional fitness industry marketer with 10 years experience
@@ -205,7 +211,9 @@ Specificity: {{specificity}}
 
 Purpose: {{purpose}}
 
-Example: {{example}}`,
+Example: {{example}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Write product descriptions like our brand',
           exampleAfter: `Context: E-commerce store selling eco-friendly home goods
@@ -235,7 +243,9 @@ Tone: {{tone}}
 
 Audience: {{audience}}
 
-Response format: {{format}}`,
+Response format: {{format}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Write an article about yoga benefits',
           exampleAfter: `Context: Fitness trainer with 5 years experience, blog for beginners
@@ -271,7 +281,9 @@ Steps:
 
 End goal: {{end_goal}}
 
-Narrowing: {{narrowing}}`,
+Narrowing: {{narrowing}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Write an article about Pomodoro',
           exampleAfter: `Role: Author of popular productivity blog (50k+ subscribers)
@@ -424,7 +436,9 @@ Narrowing: 600-800 words, no clichés like "time is money", conversational, subh
 
 Purpose: {{purpose}}
 
-Expectation: {{expectation}}`,
+Expectation: {{expectation}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Напиши пост про новый продукт',
           exampleAfter: `Action: Создай Instagram-пост о запуске нового тренажёра
@@ -446,7 +460,9 @@ Expectation: 150-200 символов, неформальный тон, 3-5 хе
 
 Task: {{task}}
 
-Format: {{format}}`,
+Format: {{format}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Напиши описание товара',
           exampleAfter: `Role: Копирайтер интернет-магазина
@@ -469,7 +485,9 @@ Action: {{action}}
 
 Context: {{context}}
 
-Expectation: {{expectation}}`,
+Expectation: {{expectation}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Напиши пост в соцсетях про фитнес-продукт',
           exampleAfter: `Role: Профессиональный маркетолог фитнес-индустрии с 10-летним опытом
@@ -499,7 +517,9 @@ Specificity: {{specificity}}
 
 Purpose: {{purpose}}
 
-Example: {{example}}`,
+Example: {{example}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Напиши описания товаров в стиле нашего бренда',
           exampleAfter: `Context: Интернет-магазин эко-товаров для дома
@@ -529,7 +549,9 @@ Tone: {{tone}}
 
 Audience: {{audience}}
 
-Response format: {{format}}`,
+Response format: {{format}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Напиши статью о пользе йоги',
           exampleAfter: `Context: Фитнес-тренер с 5-летним опытом, блог для новичков
@@ -565,7 +587,9 @@ Steps:
 
 End goal: {{end_goal}}
 
-Narrowing: {{narrowing}}`,
+Narrowing: {{narrowing}}
+
+{{additional}}`,
         tips: {
           exampleBefore: 'Напиши статью о Pomodoro',
           exampleAfter: `Role: Автор популярного блога о продуктивности (50k+ подписчиков)
