@@ -5,8 +5,36 @@ import { useLanguage } from '../i18n'
 
 // Пресеты моделей
 const MODEL_PRESETS = {
-  finalists: {
-    name: 'Финалисты (12)',
+  ape_finalists: {
+    name: 'APE Финалисты (7)',
+    models: [
+      'anthropic/claude-opus-4.5',
+      'deepseek/deepseek-v3.2-speciale',
+      'google/gemini-3-flash-preview',
+      'google/gemini-3-pro-preview',
+      'mistralai/devstral-2512:free',
+      'nex-agi/deepseek-v3.1-nex-n1:free',
+      'tngtech/tng-r1t-chimera:free',
+    ]
+  },
+  top3: {
+    name: 'Топ-3',
+    models: [
+      'deepseek/deepseek-v3.2-speciale',
+      'anthropic/claude-opus-4.5',
+      'google/gemini-3-flash-preview',
+    ]
+  },
+  free: {
+    name: 'Бесплатные',
+    models: [
+      'mistralai/devstral-2512:free',
+      'nex-agi/deepseek-v3.1-nex-n1:free',
+      'tngtech/tng-r1t-chimera:free',
+    ]
+  },
+  screening: {
+    name: 'Скрининг (12)',
     models: [
       'openai/gpt-5.2-chat',
       'openai/gpt-5.2',
@@ -19,24 +47,6 @@ const MODEL_PRESETS = {
       'x-ai/grok-4.1-fast',
       'mistralai/devstral-2512:free',
       'minimax/minimax-m2',
-      'tngtech/tng-r1t-chimera:free',
-    ]
-  },
-  top5: {
-    name: 'Топ-5',
-    models: [
-      'openai/gpt-5.2-chat',
-      'google/gemini-3-pro-preview',
-      'anthropic/claude-opus-4.5',
-      'deepseek/deepseek-v3.2-speciale',
-      'x-ai/grok-4.1-fast',
-    ]
-  },
-  free: {
-    name: 'Бесплатные',
-    models: [
-      'nex-agi/deepseek-v3.1-nex-n1:free',
-      'mistralai/devstral-2512:free',
       'tngtech/tng-r1t-chimera:free',
     ]
   }
