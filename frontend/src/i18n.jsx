@@ -140,10 +140,12 @@ Purpose: Spark curiosity and desire to learn more
 Expectation: 150-200 chars, informal tone, 3-5 hashtags`,
           errors: [
             { bad: '"do something"', good: '"write 5 headline options"' },
-            { bad: '"make it good"', good: '"200 words, conversational tone"' },
+            { bad: '"be creative"', good: '"vivid imagery, metaphors, short sentences"' },
+            { bad: '"engaging"', good: '"hook question, short paragraphs, CTA at end"' },
             { bad: '"detailed guide in 100 words"', good: 'conflict! pick one' }
           ],
-          insight: '80% of tasks do NOT need complex frameworks. Start with APE.'
+          insight: '80% of tasks do NOT need complex frameworks. Start with APE.',
+          proTip: 'Concrete descriptors > abstract adjectives. "professional tone" → "active voice, concise sentences, industry terms"'
         }
       },
       rtf: {
@@ -190,11 +192,17 @@ Context: Trainer launches in Moscow premium gyms. Target: men 25-40, mid+ income
 Expectation: 3 key benefits, 2-3 variants, relevant hashtags`,
           errors: [
             { bad: '"expert"', good: '"senior UX designer with fintech experience"' },
-            { bad: 'no context', good: 'response will be abstract without it' },
+            { bad: '"copywriter"', good: '"Apple-style copywriter: minimalism, emotions, short phrases"' },
+            { bad: 'no context', good: 'add: who, for whom, why, situation' },
             { bad: '"good text"', good: '"3 points, formal tone, 200 words"' }
           ],
+          roleLevels: [
+            { level: 'Basic', example: '"You are a copywriter"', effect: 'almost no effect' },
+            { level: 'Detailed', example: '"Senior copywriter, 10 years in fintech"', effect: 'affects style' },
+            { level: 'Stylistic', example: '"Apple-style: minimalism, emotions"', effect: 'affects tone' }
+          ],
           insight: '⚠️ Research (Zheng 2023): Persona prompting does NOT improve accuracy for factual tasks. Works only for creative/subjective tasks.',
-          science: 'Studied 162 roles — random effect, sometimes better, sometimes worse. Specific role helps set vocabulary and tone, not accuracy.'
+          proTip: 'Role MUST be specific. "Expert" = useless. "Senior fintech copywriter who worked with Stripe" = useful.'
         }
       },
       crispe: {
@@ -247,16 +255,16 @@ Response format: {{format}}
 
 {{additional}}`,
         tips: {
-          exampleBefore: 'Write an article about yoga benefits',
-          exampleAfter: `Context: Fitness trainer with 5 years experience, blog for beginners
-Objective: Write motivating article convincing readers to try yoga
+          exampleBefore: 'Write a marketing email',
+          exampleAfter: `Context: B2B SaaS startup selling HR automation. Target: HR directors of 100-500 employee companies. Goal: invite to demo.
+Objective: Write email that gets demo signups
 Style: Light and vivid, with real-life examples (like lifestyle magazines)
 Tone: Friendly and inspiring, no lecturing
-Audience: Adults 25-40, beginners, value practical advice
-Response: ~500 words, 3-4 sections with subheadings, CTA at the end`,
+Audience: HR directors, no technical background, value time savings
+Response: Subject line + 150 words body + clear CTA`,
           errors: [
             { bad: '"friendly" as Style', good: '"friendly" is TONE, not style!' },
-            { bad: 'Style = Tone', good: 'Style = HOW we write, Tone = emotional coloring' },
+            { bad: '"don\'t be boring"', good: '"avoid: \'it\'s important to note\', \'in conclusion\', \'it should be emphasized\'"' },
             { bad: '"detailed article" + "100 words"', good: 'conflicting parameters!' }
           ],
           styleTone: [
@@ -265,6 +273,7 @@ Response: ~500 words, 3-4 sections with subheadings, CTA at the end`,
             { style: 'Academic', tone: 'Friendly', use: 'popular science article' }
           ],
           insight: 'Style = HOW we write (Hemingway, Apple, academic). Tone = emotional color (empathetic, authoritative, humorous).',
+          proTip: 'Negative constraints: be SPECIFIC. ❌ "no clichés" → ✅ "never use: \'in today\'s world\', \'game-changer\', \'leverage\'"',
           warning: '⚠️ Context Overload: Complex 6-component frameworks can HURT results on small models (7B-8B). Don\'t use full CO-STAR for simple tasks.'
         }
       },
@@ -295,14 +304,16 @@ Steps:
 4. Break down common beginner mistakes
 5. End with call to try today
 End goal: Reader wants to try Pomodoro right now
-Narrowing: 600-800 words, no clichés like "time is money", conversational, subheadings`,
+Narrowing: 600-800 words, never use "time is money" or "in today's fast-paced world"`,
           errors: [
             { bad: 'skipping Steps', good: 'model gives generic structure without depth' },
             { bad: '"good article"', good: '"convince to try" — concrete goal!' },
-            { bad: 'ignoring Narrowing', good: 'text bloats, goes off-track' }
+            { bad: '"no clichés"', good: '"never use: \'time is money\', \'game-changer\', \'at the end of the day\'"' }
           ],
           insight: 'Steps activates Chain-of-Thought reasoning. Narrowing = negative space (what NOT to do).',
-          warning: '⚠️ MIT 2025: CoT HURTS creativity — produces "soulless" texts. For creative tasks: fewer steps, more freedom. Use "Start with X, end with Y" without rigid algorithm between.'
+          proTip: '"Let\'s work this out step by step to be sure we have the right answer" beats "Let\'s think step by step" (Zhou et al.)',
+          warning: '⚠️ MIT 2025: CoT HURTS creativity — produces "soulless" texts. For creative tasks: fewer steps, more freedom.',
+          structure: 'Article structure: Hook → Problem → Solution → Proof → CTA'
         }
       }
     }
@@ -446,10 +457,12 @@ Purpose: Вызвать любопытство и желание узнать б
 Expectation: 150-200 символов, неформальный тон, 3-5 хештегов`,
           errors: [
             { bad: '«сделай что-нибудь»', good: '«напиши 5 вариантов заголовка»' },
-            { bad: '«сделай хорошо»', good: '«200 слов, разговорный тон»' },
+            { bad: '«будь креативным»', good: '«яркие образы, метафоры, короткие фразы»' },
+            { bad: '«вовлекающе»', good: '«вопрос-крючок, короткие абзацы, CTA в конце»' },
             { bad: '«подробный гид на 100 слов»', good: 'конфликт! выбери одно' }
           ],
-          insight: '80% задач НЕ требуют сложных фреймворков. Начни с APE.'
+          insight: '80% задач НЕ требуют сложных фреймворков. Начни с APE.',
+          proTip: 'Конкретные дескрипторы > абстракции. «профессиональный тон» → «активный залог, короткие предложения, термины индустрии»'
         }
       },
       rtf: {
@@ -496,11 +509,17 @@ Context: Тренажёр выходит на рынок премиум-спор
 Expectation: 3 ключевых преимущества, 2-3 варианта, релевантные хештеги`,
           errors: [
             { bad: '«эксперт»', good: '«senior UX-дизайнер с опытом в fintech»' },
-            { bad: 'без контекста', good: 'ответ будет абстрактным' },
+            { bad: '«копирайтер»', good: '«копирайтер в стиле Apple: минимализм, эмоции, короткие фразы»' },
+            { bad: 'без контекста', good: 'добавь: кто, для кого, зачем, ситуация' },
             { bad: '«хороший текст»', good: '«3 пункта, формальный тон, 200 слов»' }
           ],
+          roleLevels: [
+            { level: 'Базовый', example: '«Ты копирайтер»', effect: 'почти не влияет' },
+            { level: 'Детальный', example: '«Senior копирайтер, 10 лет в fintech»', effect: 'влияет на стиль' },
+            { level: 'Стилистический', example: '«В стиле Apple: минимализм, эмоции»', effect: 'влияет на тон' }
+          ],
           insight: '⚠️ Исследование (Zheng 2023): Persona prompting НЕ улучшает точность для фактических задач. Работает только для креативных/субъективных.',
-          science: 'Изучили 162 роли — эффект случайный. Конкретная роль помогает задать словарный запас и тон, не точность.'
+          proTip: 'Роль ДОЛЖНА быть конкретной. «Эксперт» = бесполезно. «Senior fintech копирайтер, работавший со Stripe» = полезно.'
         }
       },
       crispe: {
@@ -553,16 +572,16 @@ Response format: {{format}}
 
 {{additional}}`,
         tips: {
-          exampleBefore: 'Напиши статью о пользе йоги',
-          exampleAfter: `Context: Фитнес-тренер с 5-летним опытом, блог для новичков
-Objective: Написать мотивирующую статью, которая убедит попробовать йогу
-Style: Лёгкий и образный, с примерами из жизни (как в lifestyle-журналах)
+          exampleBefore: 'Напиши маркетинговый email',
+          exampleAfter: `Context: B2B SaaS стартап, автоматизация HR. ЦА: HR-директора компаний 100-500 чел. Цель: пригласить на демо.
+Objective: Email, который приводит на демо
+Style: Лёгкий и образный, с примерами из жизни
 Tone: Дружелюбный и вдохновляющий, без менторства
-Audience: Взрослые 25-40, новички, ценят практичные советы
-Response: ~500 слов, 3-4 раздела с подзаголовками, CTA в конце`,
+Audience: HR-директора без технического бэкграунда, ценят экономию времени
+Response: Тема письма + 150 слов тело + чёткий CTA`,
           errors: [
             { bad: '«дружелюбный» как Style', good: '«дружелюбный» — это ТОН, не стиль!' },
-            { bad: 'Style = Tone', good: 'Style = КАК пишем, Tone = эмоциональная окраска' },
+            { bad: '«не пиши скучно»', good: '«избегай: \'важно отметить\', \'в заключение\', \'следует подчеркнуть\'»' },
             { bad: '«развёрнутая статья» + «100 слов»', good: 'конфликт параметров!' }
           ],
           styleTone: [
@@ -571,7 +590,8 @@ Response: ~500 слов, 3-4 раздела с подзаголовками, CTA
             { style: 'Академический', tone: 'Дружелюбный', use: 'научпоп статья' }
           ],
           insight: 'Style = КАК пишем (Хемингуэй, Apple, академический). Tone = эмоция (эмпатичный, авторитетный, юмор).',
-          warning: '⚠️ Context Overload: Сложные фреймворки с 6 компонентами могут УХУДШАТЬ результат на малых моделях (7B-8B). Не используй полный CO-STAR для простых задач.'
+          proTip: 'Негативные ограничения: будь КОНКРЕТЕН. ❌ «без клише» → ✅ «никогда не используй: \'в современном мире\', \'game-changer\'»',
+          warning: '⚠️ Context Overload: Сложные фреймворки с 6 компонентами могут УХУДШАТЬ результат на малых моделях (7B-8B).'
         }
       },
       risen: {
@@ -601,14 +621,16 @@ Steps:
 4. Разбей частые ошибки новичков
 5. Закончи призывом попробовать сегодня
 End goal: Читатель захочет попробовать прямо сейчас
-Narrowing: 600-800 слов, без банальностей "время — деньги", разговорный стиль`,
+Narrowing: 600-800 слов, никогда не используй "время — деньги" или "в современном мире"`,
           errors: [
             { bad: 'пропуск Steps', good: 'модель выдаёт общую структуру без глубины' },
             { bad: '«хорошая статья»', good: '«убедить попробовать» — конкретная цель!' },
-            { bad: 'игнорирование Narrowing', good: 'текст раздувается, уходит не туда' }
+            { bad: '«без клише»', good: '«никогда не используй: \'время — деньги\', \'в конце концов\'»' }
           ],
           insight: 'Steps активирует Chain-of-Thought reasoning. Narrowing = негативное пространство (что НЕ делать).',
-          warning: '⚠️ MIT 2025: CoT ВРЕДИТ креативности — даёт «soulless» тексты. Для креатива: меньше шагов, больше свободы. Используй «Начни с X, закончи Y» без жёсткого алгоритма между.'
+          proTip: '«Давай разберём это пошагово, чтобы получить правильный ответ» лучше чем «Думай пошагово» (Zhou et al.)',
+          warning: '⚠️ MIT 2025: CoT ВРЕДИТ креативности — даёт «soulless» тексты. Для креатива: меньше шагов, больше свободы.',
+          structure: 'Структура статьи: Крючок → Проблема → Решение → Доказательства → CTA'
         }
       }
     }

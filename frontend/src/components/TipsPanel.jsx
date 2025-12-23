@@ -107,24 +107,50 @@ export function TipsPanel({ templateName }) {
                 </div>
               )}
 
+              {/* Role Levels (RACE) */}
+              {tips.roleLevels && (
+                <div className="bg-purple-50 rounded-lg p-3">
+                  <div className="text-[10px] font-semibold text-purple-600 uppercase tracking-wide mb-1.5">
+                    {language === 'ru' ? 'Уровни роли' : 'Role Levels'}
+                  </div>
+                  <div className="space-y-1">
+                    {tips.roleLevels.map((r, i) => (
+                      <div key={i} className="text-xs">
+                        <span className="font-medium text-purple-700">{r.level}:</span>
+                        <span className="text-neutral-600"> {r.example}</span>
+                        <span className="text-neutral-400"> → </span>
+                        <span className="text-purple-600">{r.effect}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Structure (RISEN) */}
+              {tips.structure && (
+                <div className="text-xs text-neutral-600 bg-neutral-100 rounded-lg p-2">
+                  <span className="font-medium">📝 </span>{tips.structure}
+                </div>
+              )}
+
               {/* Insight */}
               <div className="flex items-start gap-2 p-2 bg-amber-50 rounded-lg">
                 <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
                 <p className="text-xs text-amber-800">{tips.insight}</p>
               </div>
 
+              {/* Pro Tip (if exists) */}
+              {tips.proTip && (
+                <div className="text-xs text-blue-700 bg-blue-50 rounded-lg p-2">
+                  <span className="font-semibold">💡 Pro tip: </span>{tips.proTip}
+                </div>
+              )}
+
               {/* Warning (if exists) */}
               {tips.warning && (
                 <div className="flex items-start gap-2 p-2 bg-red-50 rounded-lg">
                   <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-red-700">{tips.warning}</p>
-                </div>
-              )}
-
-              {/* Science (if exists) */}
-              {tips.science && (
-                <div className="text-[11px] text-neutral-500 italic pl-2 border-l-2 border-neutral-200">
-                  {tips.science}
                 </div>
               )}
             </div>
