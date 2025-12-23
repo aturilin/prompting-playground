@@ -1,13 +1,32 @@
-import React, { useState } from 'react'
-import { Code2, Check, Sparkles } from 'lucide-react'
+import React, { useState, useMemo } from 'react'
+import { Code2, Check, Sparkles, ChevronDown, Lightbulb, AlertTriangle, Zap } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '../i18n'
 
-export function TemplateWithInputs({ template, values, onChange, onTemplateChange }) {
-  const { t } = useLanguage()
+// Map template names to framework keys
+const FRAMEWORK_KEYS = {
+  'APE': 'ape',
+  'RTF': 'rtf',
+  'RACE': 'race',
+  'CRISP-E': 'crispe',
+  'CO-STAR': 'costar',
+  'RISEN': 'risen'
+}
+
+export function TemplateWithInputs({ template, templateName, values, onChange, onTemplateChange }) {
+  const { t, language } = useLanguage()
   const [isEditingTemplate, setIsEditingTemplate] = useState(false)
   const [editedTemplate, setEditedTemplate] = useState(template)
   const [focusedVar, setFocusedVar] = useState(null)
+  const [tipsExpanded, setTipsExpanded] = useState(false)
+
+  // Get tips for current template
+  const tips = useMemo(() => {
+    const key = FRAMEWORK_KEYS[templateName]
+    if (!key) return null
+    const templateData = t(`starterTemplates.${key}`)
+    return templateData?.tips || null
+  }, [templateName, t])
 
   const handleSaveTemplate = () => {
     onTemplateChange(editedTemplate)
@@ -140,6 +159,118 @@ export function TemplateWithInputs({ template, values, onChange, onTemplateChang
           )}
         </div>
       </div>
+
+      {/* Tips Panel */}
+      <AnimatePresence>
+        {tips && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="border-b border-neutral-100"
+          >
+            <button
+              onClick={() => setTipsExpanded(!tipsExpanded)}
+              className="w-full px-5 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors"
+            >
+              <div className="flex items-center gap-2 text-sm font-medium text-amber-600">
+                <Lightbulb className="w-4 h-4" />
+                <span>Tips & Tricks</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-neutral-400 transition-transform ${tipsExpanded ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {tipsExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-5 pb-4 space-y-4">
+                    {/* Before/After Example */}
+                    <div className="bg-neutral-50 rounded-xl p-4">
+                      <div className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">
+                        {language === 'ru' ? 'Пример трансформации' : 'Transformation Example'}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <span className="text-red-500 font-bold text-sm shrink-0">❌</span>
+                          <code className="text-sm text-neutral-600 bg-red-50 px-2 py-1 rounded">{tips.exampleBefore}</code>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-green-500 font-bold text-sm shrink-0">✅</span>
+                          <pre className="text-sm text-neutral-700 bg-green-50 px-2 py-1 rounded whitespace-pre-wrap flex-1">{tips.exampleAfter}</pre>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Errors */}
+                    {tips.errors && tips.errors.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-red-600 uppercase tracking-wide mb-2">
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          {language === 'ru' ? 'Типичные ошибки' : 'Common Mistakes'}
+                        </div>
+                        <div className="space-y-1.5">
+                          {tips.errors.map((err, i) => (
+                            <div key={i} className="flex items-center gap-2 text-sm">
+                              <span className="text-red-500 line-through">{err.bad}</span>
+                              <span className="text-neutral-400">→</span>
+                              <span className="text-green-600 font-medium">{err.good}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Style vs Tone (CO-STAR) */}
+                    {tips.styleTone && (
+                      <div className="bg-blue-50 rounded-xl p-4">
+                        <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">
+                          Style + Tone {language === 'ru' ? 'комбинации' : 'combinations'}
+                        </div>
+                        <div className="space-y-1.5">
+                          {tips.styleTone.map((combo, i) => (
+                            <div key={i} className="text-sm">
+                              <span className="font-medium text-neutral-700">{combo.style}</span>
+                              <span className="text-neutral-400"> + </span>
+                              <span className="font-medium text-neutral-700">{combo.tone}</span>
+                              <span className="text-neutral-400"> = </span>
+                              <span className="text-blue-600">{combo.use}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Insight */}
+                    <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl">
+                      <Zap className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-sm text-amber-800">{tips.insight}</p>
+                    </div>
+
+                    {/* Warning (if exists) */}
+                    {tips.warning && (
+                      <div className="flex items-start gap-2 p-3 bg-red-50 rounded-xl">
+                        <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                        <p className="text-sm text-red-700">{tips.warning}</p>
+                      </div>
+                    )}
+
+                    {/* Science (if exists) */}
+                    {tips.science && (
+                      <div className="text-xs text-neutral-500 italic pl-3 border-l-2 border-neutral-200">
+                        {tips.science}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Content */}
       <div className="relative flex-1 overflow-hidden">

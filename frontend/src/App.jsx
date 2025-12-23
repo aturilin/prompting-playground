@@ -425,6 +425,7 @@ export default function App() {
             {/* Template Editor */}
             <TemplateWithInputs
               template={currentTemplate.template}
+              templateName={currentTemplate.name}
               values={variableValues}
               onChange={handleVariableChange}
               onTemplateChange={handleTemplateChange}

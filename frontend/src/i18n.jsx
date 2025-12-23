@@ -130,7 +130,19 @@ Constraints: {{constraints}}`
 
 Purpose: {{purpose}}
 
-Expectation: {{expectation}}`
+Expectation: {{expectation}}`,
+        tips: {
+          exampleBefore: 'Write a post about a new product',
+          exampleAfter: `Action: Create an Instagram post about the new trainer launch
+Purpose: Spark curiosity and desire to learn more
+Expectation: 150-200 chars, informal tone, 3-5 hashtags`,
+          errors: [
+            { bad: '"do something"', good: '"write 5 headline options"' },
+            { bad: '"make it good"', good: '"200 words, conversational tone"' },
+            { bad: '"detailed guide in 100 words"', good: 'conflict! pick one' }
+          ],
+          insight: '80% of tasks do NOT need complex frameworks. Start with APE.'
+        }
       },
       rtf: {
         name: 'RTF',
@@ -140,7 +152,18 @@ Expectation: {{expectation}}`
 
 Task: {{task}}
 
-Format: {{format}}`
+Format: {{format}}`,
+        tips: {
+          exampleBefore: 'Write product description',
+          exampleAfter: `Role: E-commerce copywriter
+Task: Write a product card for wireless headphones
+Format: Title (5 words max) + 3 bullet points + CTA`,
+          errors: [
+            { bad: '"expert"', good: '"fintech UX designer with 5 years experience"' },
+            { bad: 'no format specified', good: '"markdown with headers"' }
+          ],
+          insight: 'When you don\'t need context or tone settings — RTF is enough.'
+        }
       },
       race: {
         name: 'RACE',
@@ -152,7 +175,21 @@ Action: {{action}}
 
 Context: {{context}}
 
-Expectation: {{expectation}}`
+Expectation: {{expectation}}`,
+        tips: {
+          exampleBefore: 'Write a social media post about a fitness product',
+          exampleAfter: `Role: Professional fitness industry marketer with 10 years experience
+Action: Create a new trainer presentation post for Instagram
+Context: Trainer launches in Moscow premium gyms. Target: men 25-40, mid+ income
+Expectation: 3 key benefits, 2-3 variants, relevant hashtags`,
+          errors: [
+            { bad: '"expert"', good: '"senior UX designer with fintech experience"' },
+            { bad: 'no context', good: 'response will be abstract without it' },
+            { bad: '"good text"', good: '"3 points, formal tone, 200 words"' }
+          ],
+          insight: '⚠️ Research (Zheng 2023): Persona prompting does NOT improve accuracy for factual tasks. Works only for creative/subjective tasks.',
+          science: 'Studied 162 roles — random effect, sometimes better, sometimes worse. Specific role helps set vocabulary and tone, not accuracy.'
+        }
       },
       crispe: {
         name: 'CRISP-E',
@@ -168,7 +205,21 @@ Specificity: {{specificity}}
 
 Purpose: {{purpose}}
 
-Example: {{example}}`
+Example: {{example}}`,
+        tips: {
+          exampleBefore: 'Write product descriptions like our brand',
+          exampleAfter: `Context: E-commerce store selling eco-friendly home goods
+Role: Brand copywriter who knows our voice
+Instruction: Write product description for bamboo utensil set
+Specificity: 80-100 words, 3 benefits, eco-angle
+Purpose: Convert browsers to buyers
+Example: "Transform your kitchen into an eco-haven. Our bamboo cutting board..."`,
+          errors: [
+            { bad: 'example without explanation', good: 'explain WHY this example is good' },
+            { bad: 'too long example', good: 'keep it to 2-3 sentences max' }
+          ],
+          insight: 'Example is the anchor — model adjusts style, structure and tone to match it.'
+        }
       },
       costar: {
         name: 'CO-STAR',
@@ -184,7 +235,28 @@ Tone: {{tone}}
 
 Audience: {{audience}}
 
-Response format: {{format}}`
+Response format: {{format}}`,
+        tips: {
+          exampleBefore: 'Write an article about yoga benefits',
+          exampleAfter: `Context: Fitness trainer with 5 years experience, blog for beginners
+Objective: Write motivating article convincing readers to try yoga
+Style: Light and vivid, with real-life examples (like lifestyle magazines)
+Tone: Friendly and inspiring, no lecturing
+Audience: Adults 25-40, beginners, value practical advice
+Response: ~500 words, 3-4 sections with subheadings, CTA at the end`,
+          errors: [
+            { bad: '"friendly" as Style', good: '"friendly" is TONE, not style!' },
+            { bad: 'Style = Tone', good: 'Style = HOW we write, Tone = emotional coloring' },
+            { bad: '"detailed article" + "100 words"', good: 'conflicting parameters!' }
+          ],
+          styleTone: [
+            { style: 'Business', tone: 'Empathetic', use: 'apology letter to client' },
+            { style: 'Conversational', tone: 'Authoritative', use: 'expert social post' },
+            { style: 'Academic', tone: 'Friendly', use: 'popular science article' }
+          ],
+          insight: 'Style = HOW we write (Hemingway, Apple, academic). Tone = emotional color (empathetic, authoritative, humorous).',
+          warning: '⚠️ Context Overload: Complex 6-component frameworks can HURT results on small models (7B-8B). Don\'t use full CO-STAR for simple tasks.'
+        }
       },
       risen: {
         name: 'RISEN',
@@ -199,7 +271,27 @@ Steps:
 
 End goal: {{end_goal}}
 
-Narrowing: {{narrowing}}`
+Narrowing: {{narrowing}}`,
+        tips: {
+          exampleBefore: 'Write an article about Pomodoro',
+          exampleAfter: `Role: Author of popular productivity blog (50k+ subscribers)
+Instructions: Article for those who heard about Pomodoro but never tried
+Steps:
+1. Start with relatable problem (procrastination)
+2. Briefly explain the core (25/5 minutes)
+3. Give 3 non-obvious tips
+4. Break down common beginner mistakes
+5. End with call to try today
+End goal: Reader wants to try Pomodoro right now
+Narrowing: 600-800 words, no clichés like "time is money", conversational, subheadings`,
+          errors: [
+            { bad: 'skipping Steps', good: 'model gives generic structure without depth' },
+            { bad: '"good article"', good: '"convince to try" — concrete goal!' },
+            { bad: 'ignoring Narrowing', good: 'text bloats, goes off-track' }
+          ],
+          insight: 'Steps activates Chain-of-Thought reasoning. Narrowing = negative space (what NOT to do).',
+          warning: '⚠️ MIT 2025: CoT HURTS creativity — produces "soulless" texts. For creative tasks: fewer steps, more freedom. Use "Start with X, end with Y" without rigid algorithm between.'
+        }
       }
     }
   },
@@ -332,7 +424,19 @@ Narrowing: {{narrowing}}`
 
 Purpose: {{purpose}}
 
-Expectation: {{expectation}}`
+Expectation: {{expectation}}`,
+        tips: {
+          exampleBefore: 'Напиши пост про новый продукт',
+          exampleAfter: `Action: Создай Instagram-пост о запуске нового тренажёра
+Purpose: Вызвать любопытство и желание узнать больше
+Expectation: 150-200 символов, неформальный тон, 3-5 хештегов`,
+          errors: [
+            { bad: '«сделай что-нибудь»', good: '«напиши 5 вариантов заголовка»' },
+            { bad: '«сделай хорошо»', good: '«200 слов, разговорный тон»' },
+            { bad: '«подробный гид на 100 слов»', good: 'конфликт! выбери одно' }
+          ],
+          insight: '80% задач НЕ требуют сложных фреймворков. Начни с APE.'
+        }
       },
       rtf: {
         name: 'RTF',
@@ -342,7 +446,18 @@ Expectation: {{expectation}}`
 
 Task: {{task}}
 
-Format: {{format}}`
+Format: {{format}}`,
+        tips: {
+          exampleBefore: 'Напиши описание товара',
+          exampleAfter: `Role: Копирайтер интернет-магазина
+Task: Напиши карточку товара для беспроводных наушников
+Format: Заголовок (макс 5 слов) + 3 буллета + CTA`,
+          errors: [
+            { bad: '«эксперт»', good: '«UX-дизайнер с 5-летним опытом в fintech»' },
+            { bad: 'без формата', good: '«markdown с заголовками»' }
+          ],
+          insight: 'Когда не нужен контекст и настройки тона — RTF достаточно.'
+        }
       },
       race: {
         name: 'RACE',
@@ -354,7 +469,21 @@ Action: {{action}}
 
 Context: {{context}}
 
-Expectation: {{expectation}}`
+Expectation: {{expectation}}`,
+        tips: {
+          exampleBefore: 'Напиши пост в соцсетях про фитнес-продукт',
+          exampleAfter: `Role: Профессиональный маркетолог фитнес-индустрии с 10-летним опытом
+Action: Создай пост-презентацию нового тренажёра для Instagram
+Context: Тренажёр выходит на рынок премиум-спортзалов Москвы. ЦА — мужчины 25-40
+Expectation: 3 ключевых преимущества, 2-3 варианта, релевантные хештеги`,
+          errors: [
+            { bad: '«эксперт»', good: '«senior UX-дизайнер с опытом в fintech»' },
+            { bad: 'без контекста', good: 'ответ будет абстрактным' },
+            { bad: '«хороший текст»', good: '«3 пункта, формальный тон, 200 слов»' }
+          ],
+          insight: '⚠️ Исследование (Zheng 2023): Persona prompting НЕ улучшает точность для фактических задач. Работает только для креативных/субъективных.',
+          science: 'Изучили 162 роли — эффект случайный. Конкретная роль помогает задать словарный запас и тон, не точность.'
+        }
       },
       crispe: {
         name: 'CRISP-E',
@@ -370,7 +499,21 @@ Specificity: {{specificity}}
 
 Purpose: {{purpose}}
 
-Example: {{example}}`
+Example: {{example}}`,
+        tips: {
+          exampleBefore: 'Напиши описания товаров в стиле нашего бренда',
+          exampleAfter: `Context: Интернет-магазин эко-товаров для дома
+Role: Бренд-копирайтер, знающий наш голос
+Instruction: Напиши описание набора бамбуковых приборов
+Specificity: 80-100 слов, 3 преимущества, эко-акцент
+Purpose: Конвертировать посетителей в покупателей
+Example: "Превратите кухню в эко-оазис. Наша бамбуковая доска..."`,
+          errors: [
+            { bad: 'пример без объяснения', good: 'объясни ПОЧЕМУ этот пример хороший' },
+            { bad: 'слишком длинный пример', good: 'держи в 2-3 предложениях макс' }
+          ],
+          insight: 'Example служит якорем — модель подстраивает стиль, структуру и тон под образец.'
+        }
       },
       costar: {
         name: 'CO-STAR',
@@ -386,7 +529,28 @@ Tone: {{tone}}
 
 Audience: {{audience}}
 
-Response format: {{format}}`
+Response format: {{format}}`,
+        tips: {
+          exampleBefore: 'Напиши статью о пользе йоги',
+          exampleAfter: `Context: Фитнес-тренер с 5-летним опытом, блог для новичков
+Objective: Написать мотивирующую статью, которая убедит попробовать йогу
+Style: Лёгкий и образный, с примерами из жизни (как в lifestyle-журналах)
+Tone: Дружелюбный и вдохновляющий, без менторства
+Audience: Взрослые 25-40, новички, ценят практичные советы
+Response: ~500 слов, 3-4 раздела с подзаголовками, CTA в конце`,
+          errors: [
+            { bad: '«дружелюбный» как Style', good: '«дружелюбный» — это ТОН, не стиль!' },
+            { bad: 'Style = Tone', good: 'Style = КАК пишем, Tone = эмоциональная окраска' },
+            { bad: '«развёрнутая статья» + «100 слов»', good: 'конфликт параметров!' }
+          ],
+          styleTone: [
+            { style: 'Деловой', tone: 'Эмпатичный', use: 'письмо с извинениями клиенту' },
+            { style: 'Разговорный', tone: 'Авторитетный', use: 'экспертный пост в соцсетях' },
+            { style: 'Академический', tone: 'Дружелюбный', use: 'научпоп статья' }
+          ],
+          insight: 'Style = КАК пишем (Хемингуэй, Apple, академический). Tone = эмоция (эмпатичный, авторитетный, юмор).',
+          warning: '⚠️ Context Overload: Сложные фреймворки с 6 компонентами могут УХУДШАТЬ результат на малых моделях (7B-8B). Не используй полный CO-STAR для простых задач.'
+        }
       },
       risen: {
         name: 'RISEN',
@@ -401,7 +565,27 @@ Steps:
 
 End goal: {{end_goal}}
 
-Narrowing: {{narrowing}}`
+Narrowing: {{narrowing}}`,
+        tips: {
+          exampleBefore: 'Напиши статью о Pomodoro',
+          exampleAfter: `Role: Автор популярного блога о продуктивности (50k+ подписчиков)
+Instructions: Статья для тех, кто слышал о технике, но не пробовал
+Steps:
+1. Начни с relatable проблемы (прокрастинация)
+2. Кратко объясни суть (25/5 минут)
+3. Приведи 3 неочевидных совета
+4. Разбей частые ошибки новичков
+5. Закончи призывом попробовать сегодня
+End goal: Читатель захочет попробовать прямо сейчас
+Narrowing: 600-800 слов, без банальностей "время — деньги", разговорный стиль`,
+          errors: [
+            { bad: 'пропуск Steps', good: 'модель выдаёт общую структуру без глубины' },
+            { bad: '«хорошая статья»', good: '«убедить попробовать» — конкретная цель!' },
+            { bad: 'игнорирование Narrowing', good: 'текст раздувается, уходит не туда' }
+          ],
+          insight: 'Steps активирует Chain-of-Thought reasoning. Narrowing = негативное пространство (что НЕ делать).',
+          warning: '⚠️ MIT 2025: CoT ВРЕДИТ креативности — даёт «soulless» тексты. Для креатива: меньше шагов, больше свободы. Используй «Начни с X, закончи Y» без жёсткого алгоритма между.'
+        }
       }
     }
   }
